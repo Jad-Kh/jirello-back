@@ -8,7 +8,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { router } from '../routes/index.js'
 
-import prepareDatabaseConnection from '../database/connection.js'
+import prepareDatabaseConnection from '../database/connection/connection.js'
 
 dotenv.config()
 
