@@ -1,0 +1,46 @@
+import mongoose from "mongoose";
+import mongoosePaginate from "mongoose-paginate-v2";
+import aggregatePaginate from "mongoose-aggregate-paginate-v2";
+
+import { CommunityPermissions } from "./communityPermissions/communityPermissions.js";
+
+const CommunityModel = new mongoose.Schema(
+    {
+        name: {
+            type: String,
+            required: true,
+        },
+        ownerIds: {
+            type: Array,
+            default: [],
+            required: true,
+        },
+        userIds: {
+            type: Array,
+            default: [],
+            required: true,
+        },
+        projectIds: {
+            type: Array,
+            default: [],
+            required: true,
+        },
+        template: {
+            type: String,
+            default: "Normal",
+            required: true,
+        },
+        permissions: {
+            type: CommunityPermissions
+        },
+    },
+    {
+        timestamps: true,
+    }
+)
+
+CommunityModel.plugin(mongoosePaginate);
+CommunityModel.plugin(aggregatePaginate);
+
+const CommunityDatabaseModel = mongoose.model("Communities", CommunityModel);
+export { CommunityDatabaseModel }
