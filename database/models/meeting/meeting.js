@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
-const MeetingModel = new mongoose.Schema(
+const MeetingModelSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -32,8 +32,8 @@ const MeetingModel = new mongoose.Schema(
     }
 )
 
-MeetingModel.plugin(mongoosePaginate);
-MeetingModel.plugin(aggregatePaginate);
+MeetingModelSchema.plugin(mongoosePaginate);
+MeetingModelSchema.plugin(aggregatePaginate);
 
-const MeetingDatabaseModel = mongoose.model("Meetings", MeetingModel);
-export { MeetingDatabaseModel }
+const MeetingModel = mongoose.model("Meetings", MeetingModelSchema);
+export { MeetingModel }

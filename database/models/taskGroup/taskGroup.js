@@ -4,7 +4,7 @@ import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 import { TaskGroupUsers } from "./taskGroupUsers.js/taskGroupUsers";
 
-const TaskGroupModel = new mongoose.Schema(
+const TaskGroupModelSchema = new mongoose.Schema(
     {
         title: {
             type: String,
@@ -28,8 +28,8 @@ const TaskGroupModel = new mongoose.Schema(
     }
 )
 
-TaskGroupModel.plugin(mongoosePaginate);
-TaskGroupModel.plugin(aggregatePaginate);
+TaskGroupModelSchema.plugin(mongoosePaginate);
+TaskGroupModelSchema.plugin(aggregatePaginate);
 
-const TaskGroupDatabaseModel = mongoose.model("TaskGroups", TaskGroupModel);
-export { TaskGroupDatabaseModel }
+const TaskGroupModel = mongoose.model("TaskGroups", TaskGroupModelSchema);
+export { TaskGroupModel }

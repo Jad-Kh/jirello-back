@@ -4,7 +4,7 @@ import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
 import { CommunityPermissions } from "./communityPermissions/communityPermissions.js";
 
-const CommunityModel = new mongoose.Schema(
+const CommunityModelSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -39,8 +39,8 @@ const CommunityModel = new mongoose.Schema(
     }
 )
 
-CommunityModel.plugin(mongoosePaginate);
-CommunityModel.plugin(aggregatePaginate);
+CommunityModelSchema.plugin(mongoosePaginate);
+CommunityModelSchema.plugin(aggregatePaginate);
 
-const CommunityDatabaseModel = mongoose.model("Communities", CommunityModel);
-export { CommunityDatabaseModel }
+const CommunityModel = mongoose.model("Communities", CommunityModelSchema);
+export { CommunityModel }

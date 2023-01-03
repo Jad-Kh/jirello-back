@@ -6,7 +6,7 @@ import { UserProfile } from "./userProfile/userProfile.js";
 import { UserTasks } from "./userTasks/userTasks.js";
 import { UserNotifications } from "./userNotifications/userNotifications.js";
 
-const UserModel = new mongoose.Schema(
+const UserModelSchema = new mongoose.Schema(
     {
         profile: {
             type: UserProfile
@@ -33,8 +33,8 @@ const UserModel = new mongoose.Schema(
     }
 )
 
-UserModel.plugin(mongoosePaginate);
-UserModel.plugin(aggregatePaginate);
+UserModelSchema.plugin(mongoosePaginate);
+UserModelSchema.plugin(aggregatePaginate);
 
-const UserDatabaseModel = mongoose.model("Users", UserModel);
-export { UserDatabaseModel }
+const UserModel = mongoose.model("Users", UserModelSchema);
+export { UserModel }

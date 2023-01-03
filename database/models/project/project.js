@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 
-const ProjectModel = new mongoose.Schema(
+const ProjectModelSchema = new mongoose.Schema(
     {
         name: {
             type: String,
@@ -38,8 +38,8 @@ const ProjectModel = new mongoose.Schema(
     }
 )
 
-ProjectModel.plugin(mongoosePaginate);
-ProjectModel.plugin(aggregatePaginate);
+ProjectModelSchema.plugin(mongoosePaginate);
+ProjectModelSchema.plugin(aggregatePaginate);
 
-const ProjectDatabaseModel = mongoose.model("Projects", ProjectModel);
-export { ProjectDatabaseModel }
+const ProjectModel = mongoose.model("Projects", ProjectModelSchema);
+export { ProjectModel }
