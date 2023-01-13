@@ -31,7 +31,7 @@ const UserProfile = new mongoose.Schema(
         password: {
             type: String,
             required: true,
-            max: 30,
+            min: 8,
         }
     },
     {

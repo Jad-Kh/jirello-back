@@ -20,7 +20,6 @@ const applyCountryCodesFilters = (countryCodes) => {
     return query
 }
 
-
 export {
     applyActiveFilters,
     applyCountryCodesFilters,
