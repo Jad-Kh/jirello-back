@@ -22,3 +22,7 @@ const signUpValidator = (req, res, next) => {
       .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
   }
 };
+
+export {
+  signUpValidator
+}
