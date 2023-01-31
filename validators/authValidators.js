@@ -10,7 +10,6 @@ const signUpValidator = (req, res, next) => {
     const bodyReceived = new SignUpRequestModel(req.body);
     const result = signUpValidationScheme.validate(bodyReceived);
     if (result.error) {
-      console.log(result)
       return res.status(AuthErrorResponses.SIGNUP_VALIDATION_ERROR.code)
         .json(prepareErrorResponse(AuthErrorResponses.SIGNUP_VALIDATION_ERROR, result?.error?.message));
     } else {

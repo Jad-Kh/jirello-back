@@ -4,6 +4,7 @@ import {
     createUserQuery
 } from "../database/queries/user/userQueries.js";
 import pkg from "lodash";
+import bcrypt from "bcrypt";
 import { prepareErrorLog } from "../errorLog/errorLog.js";
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
 import { AuthErrorResponses } from "../responses/messages/errors/auth/authErrorResponses.js";
@@ -35,6 +36,9 @@ const signUpHandler = async (req, res, next) => {
             const mutedChatIds = [];
             const muteAll = false;
             const notifications = { mutedCommunitiyIds, mutedChatIds, muteAll };
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(requestModel.password, salt);
+            requestModel.password = hashedPassword;
             const newUserBody = { isAdmin, ownedCommunityIds, profile: requestModel, tasks, notifications };
             const newUser = new CreateUserRequestModel(newUserBody);
             const savedUser = await createUserQuery(newUser);

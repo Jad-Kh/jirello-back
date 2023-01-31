@@ -7,13 +7,12 @@ const prepareJWTPayload = (user) => {
     return {
         user: {
             id: user.id,
-            role: user.role,
         },
     };
 };
 
 const generateJWT = (user) => {
-    const JWT_SECRET = process.env.JWT_SECRET || "200_JORGANIZE_RANDOM_200";
+    const JWT_SECRET = process.env.JWT_SECRET;
     const jwtData = prepareJWTPayload(user);
     const jsonToken = jwt.sign(jwtData, JWT_SECRET);
     return jsonToken;

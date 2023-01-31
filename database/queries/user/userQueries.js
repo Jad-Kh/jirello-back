@@ -4,6 +4,13 @@ const createUserQuery = async (body) => {
     return await UserModel(body).save();
 };
 
+const getUserByIdQuery = async(id) => {
+    const user = await UserModel.findOne({
+        _id: id,
+    });
+    return user;
+}
+
 const getUserByEmailQuery = async (email) => {
     const checked_email = email.toLowerCase();
     const user = await UserModel.findOne({
@@ -21,6 +28,7 @@ const getUserByUsernameQuery = async (username) => {
 
 export {
     createUserQuery,
+    getUserByIdQuery,
     getUserByEmailQuery,
     getUserByUsernameQuery,
 }

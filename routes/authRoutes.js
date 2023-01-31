@@ -6,6 +6,7 @@ import { signUpHandler } from '../handlers/authHandler.js';
 import { signUpSecurity } from '../security/authSecurity.js';
 import { signUpPresenter } from '../presenters/authPresenter.js';
 import { authController } from '../controllers/authController.js';
+import { tokenSecurity } from '../security/tokenSecurity.js';
 
 authRoutes.post(
     "/sign-up",
@@ -14,6 +15,11 @@ authRoutes.post(
     signUpSecurity,
     signUpPresenter,
     authController,
+);
+
+authRoutes.get(
+    "/token-test",
+    tokenSecurity
 );
 
 export {
