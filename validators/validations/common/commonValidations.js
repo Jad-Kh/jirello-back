@@ -1,4 +1,5 @@
-import { CommonErrorResponses, UserErrorResponses } from "../../../responses/messages/errors/user/userErrorResponse";
+import { UserErrorResponses } from "../../../responses/messages/errors/user/userErrorResponse.js";
+import { CommonErrorResponses } from "../../../responses/messages/errors/common/commonErrorResponse.js"
 
 const emailValidation = (value, helpers) => {
     let regexEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;

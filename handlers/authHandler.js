@@ -1,17 +1,22 @@
 import { 
-    getUserByEmail, 
-    getUserByUsername,
-    createUser
+    getUserByEmailQuery, 
+    getUserByUsernameQuery,
+    createUserQuery
 } from "../database/queries/user/userQueries.js";
-import { isEmpty } from "lodash";
+import pkg from "lodash";
+import { prepareErrorLog } from "../errorLog/errorLog.js";
+import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
 import { AuthErrorResponses } from "../responses/messages/errors/auth/authErrorResponses.js";
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
+import { CreateUserRequestModel } from "../requests/user/CreateUserRequestModel.js";
+
+const { isEmpty } = pkg;
 
 const signUpHandler = async (req, res, next) => {
     try {
         const requestModel = req.requestModel;
-        const userByEmail = await getUserByEmail(requestModel.email);
-        const userByUsername = await getUserByUsername(requestModel.username);
+        const userByEmail = await getUserByEmailQuery(requestModel.email);
+        const userByUsername = await getUserByUsernameQuery(requestModel.username);
         if(!isEmpty(userByEmail)) {
             return res.status(AuthErrorResponses.EMAIL_EXISTS_ERROR.code)
                 .json(prepareErrorResponse(AuthErrorResponses.EMAIL_EXISTS_ERROR, null));
@@ -20,7 +25,19 @@ const signUpHandler = async (req, res, next) => {
             return res.status(AuthErrorResponses.USERNAME_EXISTS_ERROR.code)
                 .json(prepareErrorResponse(AuthErrorResponses.USERNAME_EXISTS_ERROR, null));
         } else {
-            const savedUser = await createUser(requestModel);
+            const isAdmin = false;
+            const ownedCommunityIds = [];
+            const taskIds = [];
+            const taskGroupIds = [];
+            const taskPerWeekAverage = 0;
+            const tasks = { taskIds, taskGroupIds, taskPerWeekAverage };
+            const mutedCommunitiyIds = [];
+            const mutedChatIds = [];
+            const muteAll = false;
+            const notifications = { mutedCommunitiyIds, mutedChatIds, muteAll };
+            const newUserBody = { isAdmin, ownedCommunityIds, profile: requestModel, tasks, notifications };
+            const newUser = new CreateUserRequestModel(newUserBody);
+            const savedUser = await createUserQuery(newUser);
             req.user = savedUser;
             next();
         }
@@ -29,4 +46,8 @@ const signUpHandler = async (req, res, next) => {
         return res.status(CommonErrorResponses.SERVER_ERROR.code)
           .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
     }
+};
+
+export {
+    signUpHandler
 }

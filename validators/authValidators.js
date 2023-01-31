@@ -1,7 +1,7 @@
-import { SignUpRequestModel } from "../requests/SignUpRequestModel.js";
+import { SignUpRequestModel } from "../requests/auth/SignUpRequestModel.js";
 import { signUpValidationScheme } from "./schemes/authValidationSchemes.js";
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
-import { AuthErrorResponses } from "../responses/messages/errors/auth/authErrorResponse.js";
+import { AuthErrorResponses } from "../responses/messages/errors/auth/authErrorResponses.js";
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
 import { prepareErrorLog } from "../errorLog/errorLog.js"
 
@@ -10,6 +10,7 @@ const signUpValidator = (req, res, next) => {
     const bodyReceived = new SignUpRequestModel(req.body);
     const result = signUpValidationScheme.validate(bodyReceived);
     if (result.error) {
+      console.log(result)
       return res.status(AuthErrorResponses.SIGNUP_VALIDATION_ERROR.code)
         .json(prepareErrorResponse(AuthErrorResponses.SIGNUP_VALIDATION_ERROR, result?.error?.message));
     } else {

@@ -1,5 +1,5 @@
 class SignUpRequestModel {
-    userName = undefined;
+    username = undefined;
     email = undefined;
     firstName = undefined;
     lastName = undefined;
@@ -7,7 +7,7 @@ class SignUpRequestModel {
     birthday = undefined;
 
     constructor(values) {
-      this.userName = values.userName;
+      this.username = values.username;
       this.email = values.email;
       this.firstName = values.firstName;
       this.lastName = values.lastName;

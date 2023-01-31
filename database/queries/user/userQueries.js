@@ -1,10 +1,10 @@
 import { UserModel } from "../../models/user/user.js";
 
-const createUser = async (body) => {
+const createUserQuery = async (body) => {
     return await UserModel(body).save();
 };
 
-const getUserByEmail = async (email) => {
+const getUserByEmailQuery = async (email) => {
     const checked_email = email.toLowerCase();
     const user = await UserModel.findOne({
         "profile.email": checked_email,
@@ -12,7 +12,7 @@ const getUserByEmail = async (email) => {
     return user;
 };
 
-const getUserByUserName = async (username) => {
+const getUserByUsernameQuery = async (username) => {
     const user = await UserModel.findOne({
         "profile.username": username,
     });
@@ -20,7 +20,7 @@ const getUserByUserName = async (username) => {
 };
 
 export {
-    createUser,
-    getUserByEmail,
-    getUserByUserName,
+    createUserQuery,
+    getUserByEmailQuery,
+    getUserByUsernameQuery,
 }
