@@ -14,6 +14,13 @@ const signUpValidationScheme = Joi.object().keys({
     birthday: Joi.string().required().custom(dateValidation)
 });
 
+const logInValidationScheme = Joi.object().keys({
+    username: Joi.string(),
+    email: Joi.string().custom(emailValidation),
+    password: Joi.string().required()
+});
+
 export {
-    signUpValidationScheme
+    signUpValidationScheme,
+    logInValidationScheme
 }

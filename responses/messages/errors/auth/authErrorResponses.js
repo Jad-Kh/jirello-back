@@ -1,7 +1,11 @@
 const AuthErrorResponses = {
 
     SIGNUP_VALIDATION_ERROR: { 
-        message: 'Signup error', 
+        message: 'Signup error.', 
+        code: 400 
+    },
+    LOGIN_VALIDATION_ERROR: { 
+        message: 'Login error.', 
         code: 400 
     },
     EMAIL_EXISTS_ERROR: {
@@ -10,6 +14,14 @@ const AuthErrorResponses = {
     },
     USERNAME_EXISTS_ERROR: {
         message: 'Username already taken.',
+        code: 400
+    },
+    LOGIN_EMAIL_ERROR: {
+        message: 'Email or password is incorrect.',
+        code: 400
+    },
+    LOGIN_USERNAME_ERROR: {
+        message: 'Username or password is incorrect.',
         code: 400
     }
 }

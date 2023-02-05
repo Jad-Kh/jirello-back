@@ -13,6 +13,18 @@ const signUpPresenter = async (req, res, next) => {
     next();
 };
 
+const logInPresenter = async (req, res, next) => {
+    const responseModel = new AuthResponseModel(req.responseModel);
+    req.statusCode = AuthSuccessResponses.LOGIN_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        AuthSuccessResponses.LOGIN_SUCCESS,
+        null,
+        responseModel
+    );
+    next();
+};
+
 export {
-    signUpPresenter
+    signUpPresenter,
+    logInPresenter
 }

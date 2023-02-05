@@ -52,6 +52,32 @@ const signUpHandler = async (req, res, next) => {
     }
 };
 
+const logInHandler = async (req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const userByUsername = requestModel?.username && await getUserByUsernameQuery(requestModel?.username);
+        const userByEmail = requestModel?.email && await getUserByEmailQuery(requestModel?.email);
+        const user = userByUsername || userByEmail;
+        const userError = requestModel?.username ? AuthErrorResponses.LOGIN_USERNAME_ERROR : AuthErrorResponses.LOGIN_EMAIL_ERROR;
+        if (isEmpty(user)) {
+            return res.status(userError.code)
+                .json(prepareErrorResponse(userError, null));
+        }
+        const passwordValidation = await bcrypt.compare(requestModel.password, user.profile.password);
+        if (!passwordValidation) {
+            return res.status(userError.code)
+                .json(prepareErrorResponse(userError, null));
+        }
+        req.user = user;
+        next();
+    } catch(error) {
+        prepareErrorLog(error, logInHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+          .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    }
+};
+
 export {
-    signUpHandler
+    signUpHandler,
+    logInHandler
 }

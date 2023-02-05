@@ -1,10 +1,10 @@
 import express from 'express'
 const authRoutes = express.Router();
 
-import { signUpValidator } from '../validators/authValidators.js';
-import { signUpHandler } from '../handlers/authHandler.js';
-import { signUpSecurity } from '../security/authSecurity.js';
-import { signUpPresenter } from '../presenters/authPresenter.js';
+import { signUpValidator, logInValidator } from '../validators/authValidators.js';
+import { signUpHandler, logInHandler} from '../handlers/authHandler.js';
+import { signUpSecurity, logInSecurity } from '../security/authSecurity.js';
+import { signUpPresenter, logInPresenter } from '../presenters/authPresenter.js';
 import { authController } from '../controllers/authController.js';
 import { tokenSecurity } from '../security/tokenSecurity.js';
 
@@ -17,9 +17,13 @@ authRoutes.post(
     authController,
 );
 
-authRoutes.get(
-    "/token-test",
-    tokenSecurity
+authRoutes.post(
+    "/log-in",
+    logInValidator,
+    logInHandler,
+    logInSecurity,
+    logInPresenter,
+    authController,
 );
 
 export {
