@@ -16,5 +16,5 @@ userRoutes.get(
 
 
 export {
-    authRoutes
+    userRoutes
 }
