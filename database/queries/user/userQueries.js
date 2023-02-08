@@ -10,7 +10,7 @@ const getUserByIdQuery = async (id) => {
         _id: id,
     });
     return user;
-}
+};
 
 const getUserByEmailQuery = async (email) => {
     const checked_email = email.toLowerCase();
@@ -34,7 +34,7 @@ const getUsersOfCommunityQuery = async (communityId) => {
         _id: { $in: userIds } 
     }).select("profile");
     return users;    
-}
+};
 
 export {
     createUserQuery,

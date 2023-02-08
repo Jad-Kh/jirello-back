@@ -9,9 +9,54 @@ const getCommunityByIdQuery = async (id) => {
         _id: id,
     });
     return community;
-}
+};
+
+const updateCommunityQuery = async (id, updates) => {
+    return await CommunityModel.updateOne(
+        { _id: id },
+        { $set: updates },
+    );
+};
+
+const addUserToCommunityQuery = async (communityId, userId) => {
+    return await CommunityModel.updateOne(
+        { _id: communityId }, 
+        { $addToSet: { userIds: userId } }
+    );
+};
+
+const removeUserFromCommunityQuery = async (communityId, userId) => {
+    return await CommunityModel.updateOne(
+        {_id: communityId}, 
+        {$pull: {userIds: userId}}
+    );
+};
+
+const demoteOwnerInCommunityQuery = async (community, userId) => {
+    community.ownerIds = community.ownerIds.filter(id => id !== userId);
+    community.userIds.push(userId);
+    const updatedCommunity = await community.save();
+    return updatedCommunity;
+};
+
+const promoteUserinCommunityQuery = async (communityId, userId) => {
+    const updatedCommunity = await CommunityModel.findByIdAndUpdate(
+        communityId,
+        {
+          $pull: { userIds: userId },
+          $addToSet: { ownerIds: userId },
+        },
+        { new: true },
+    );
+    return updatedCommunity;
+};
 
 export {
     createCommunityQuery,
-    getCommunityByIdQuery
+    getCommunityByIdQuery,
+    updateCommunityQuery,
+    addUserToCommunityQuery,
+    removeUserFromCommunityQuery,
+    demoteOwnerInCommunityQuery,
+    promoteUserinCommunityQuery
 }
