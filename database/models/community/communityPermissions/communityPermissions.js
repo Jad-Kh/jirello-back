@@ -26,6 +26,10 @@ const CommunityPermissions = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        canUserSetTaskToIncomplete: {
+            type: Boolean,
+            default: false,
+        },
         canUserEditTaskGroups: {
             type: Boolean,
             default: false,
