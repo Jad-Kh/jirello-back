@@ -14,7 +14,6 @@ userRoutes.get(
     userController,
 );
 
-
 export {
     userRoutes
 }

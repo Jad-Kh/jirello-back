@@ -1,12 +1,10 @@
-import { UserProfileResponseModel } from "./utils/UserProfileResponseModel";
+import { UserOfCommunityResponseModel } from "./utils/UserOfCommunityResponseModel.js";
 
 class UsersOfCommunityResponseModel {
-    user = undefined;
-    role = undefined;
+    users = [];
 
     constructor(values) {
-        user = new UserProfileResponseModel(values.user);
-        role = values.user;
+        this.users = values?.map(user =>  new UserOfCommunityResponseModel(user));
     }
 }
 

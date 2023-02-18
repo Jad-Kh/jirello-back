@@ -11,6 +11,20 @@ const getCommunityByIdQuery = async (id) => {
     return community;
 };
 
+const getCommunityByNameQuery = async (name) => {
+    const community = await CommunityModel.findOne({
+        name: name,
+    });
+    return community;
+};
+
+const getCommunityByFlagQuery = async (flag) => {
+    const community = await CommunityModel.findOne({
+        flag: flag,
+    });
+    return community;
+};
+
 const updateCommunityQuery = async (id, updates) => {
     return await CommunityModel.updateOne(
         { _id: id },
@@ -54,6 +68,8 @@ const promoteUserinCommunityQuery = async (communityId, userId) => {
 export {
     createCommunityQuery,
     getCommunityByIdQuery,
+    getCommunityByNameQuery,
+    getCommunityByFlagQuery,
     updateCommunityQuery,
     addUserToCommunityQuery,
     removeUserFromCommunityQuery,
