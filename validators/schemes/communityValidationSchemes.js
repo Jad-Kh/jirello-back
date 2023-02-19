@@ -18,7 +18,28 @@ const createCommunityValidationScheme = Joi.object().keys({
     canUserViewOtherProjects: Joi.boolean().required(),  
 });
 
+const updateCommunityValidationScheme = Joi.object().keys({
+    id: Joi.string().required(),
+    name: Joi.string(),
+    ownerIds: Joi.array().items(Joi.string().alphanum()),
+    userIds: Joi.array().items(Joi.string().alphanum()),
+    projectIds: Joi.array().items(Joi.string().alphanum()),
+    template: Joi.string(),
+    permissions: Joi.object({
+        canUserViewOtherTasks: Joi.boolean().required(),
+        canUserViewOtherTaskGroups: Joi.boolean().required(),
+        canUserCreateTasks: Joi.boolean().required(),
+        canUserCreateTaskGroups: Joi.boolean().required(),
+        canUserEditTasks: Joi.boolean().required(),
+        canUserSetTaskToComplete: Joi.boolean().required(),
+        canUserSetTaskToIncomplete: Joi.boolean().required(),
+        canUserEditTaskGroups: Joi.boolean().required(),
+        canUserViewOtherProjects: Joi.boolean().required(), 
+    })  
+});
+
 export {
     communityByIdValidationScheme,
-    createCommunityValidationScheme
+    createCommunityValidationScheme,
+    updateCommunityValidationScheme
 }

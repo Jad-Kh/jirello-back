@@ -1,7 +1,9 @@
 import { 
     createCommunityQuery, 
+    getCommunityByIdQuery,
     getCommunityByNameQuery, 
-    getCommunityByFlagQuery 
+    getCommunityByFlagQuery, 
+    updateCommunityQuery
 } from "../database/queries/community/communityQueries.js";
 import { CommunityRequestModel } from "../requests/community/CommunityRequestModel.js";
 import { CommunityErrorResponses } from "../responses/messages/errors/community/communityErrorResponse.js";
@@ -60,6 +62,33 @@ const createCommunityHandler = async (req, res, next) => {
     }
 };
 
+const updateCommunityHandler = async (req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const community = await getCommunityByIdQuery(requestModel.id);
+        if (isEmpty(community)) {
+            return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
+              .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));
+        } else {
+            const userId = req.user.id;
+            if(!community.ownerIds.includes(userId)) {
+                return res.status(CommonErrorResponses.UNAUTHORIZED.code)
+                  .json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));                
+            } else {
+                const { id, ...updateModel } = requestModel;
+                const updatedCommunity = await updateCommunityQuery(id, updateModel);
+                req.community = updatedCommunity;
+                next();
+            }
+        }
+    } catch(error) {
+        prepareErrorLog(error, updateCommunityHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));        
+    }
+};
+
 export {
-    createCommunityHandler
+    createCommunityHandler,
+    updateCommunityHandler
 }

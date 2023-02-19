@@ -10,6 +10,10 @@ const CommunityModelSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        flag: {
+            type: String,
+            required: true,
+        },
         ownerIds: {
             type: Array,
             default: [],

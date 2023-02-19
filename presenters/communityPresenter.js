@@ -13,6 +13,18 @@ const createCommunityPresenter = async (req, res, next) => {
     next();
 };
 
+const updateCommunityPresenter = async (req, res, next) => {
+    const responseModel = new CommunityResponseModel(req.community);
+    req.statusCode = CommunitySuccessResponses.UPDATE_COMMUNITY_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        CommunitySuccessResponses.UPDATE_COMMUNITY_SUCCESS,
+        null,
+        responseModel
+    );
+    next();
+};
+
 export {
-    createCommunityPresenter
+    createCommunityPresenter,
+    updateCommunityPresenter
 }

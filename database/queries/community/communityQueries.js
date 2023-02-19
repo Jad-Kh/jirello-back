@@ -26,9 +26,10 @@ const getCommunityByFlagQuery = async (flag) => {
 };
 
 const updateCommunityQuery = async (id, updates) => {
-    return await CommunityModel.updateOne(
-        { _id: id },
-        { $set: updates },
+    return await CommunityModel.findByIdAndUpdate(
+        id,
+        updates,
+        { new: true }
     );
 };
 
@@ -42,7 +43,7 @@ const addUserToCommunityQuery = async (communityId, userId) => {
 const removeUserFromCommunityQuery = async (communityId, userId) => {
     return await CommunityModel.updateOne(
         {_id: communityId}, 
-        {$pull: {userIds: userId}}
+        { $pull: { userIds: userId } }
     );
 };
 

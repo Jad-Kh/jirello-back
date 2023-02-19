@@ -20,6 +20,10 @@ const CommunityErrorResponses = {
         message: "Error creating community",
         code: 400
     },
+    UPDATE_ERROR: {
+        message: "Error updating community",
+        code: 400
+    },
 }
 
 export {

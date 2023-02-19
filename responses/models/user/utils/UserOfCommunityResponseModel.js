@@ -1,11 +1,11 @@
 import { UserProfileResponseModel } from "./UserProfileResponseModel.js";
 
 class UserOfCommunityResponseModel {
-    user = undefined;
+    profile = undefined;
     role = undefined;
 
     constructor(values) {
-        this.user = new UserProfileResponseModel(values.user);
+        this.profile = new UserProfileResponseModel(values.user.profile);
         this.role = values.role;
     }
 }

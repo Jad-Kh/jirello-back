@@ -2,6 +2,7 @@ import { CommunityPermissionsRequestModel } from "./utils/CommunityPermissionsRe
 
 class CommunityRequestModel {
     name = undefined;
+    flag = undefined;
     ownerIds = undefined;
     userIds = undefined;
     projectIds = undefined;
@@ -10,6 +11,7 @@ class CommunityRequestModel {
 
     constructor(values) {
         this.name = values.name;
+        this.flag = values.flag;
         this.ownerIds = values.ownerIds;
         this.userIds = values.userIds;
         this.projectIds = values.projectIds;
