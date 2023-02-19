@@ -6,7 +6,6 @@ class UserProfileResponseModel extends APISignatureResponseModel {
     lastName = undefined;
     birthday = undefined;
     email = undefined;
-    password = undefined;
 
     constructor(values) {
       super(values);
@@ -15,7 +14,6 @@ class UserProfileResponseModel extends APISignatureResponseModel {
       this.lastName = values.lastName;
       this.birthday = values?.birthday;
       this.email = values.email;
-      this.password = values.password;
     }
 }
 
