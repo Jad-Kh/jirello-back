@@ -36,10 +36,22 @@ const getUsersOfCommunityQuery = async (communityId) => {
     return users;    
 };
 
+const getUsersOfCommunityPaginatedQuery = async (communityId, skip, limit) => {
+    const community = await CommunityModel.findById(communityId).select("userIds ownerIds");
+    const userIds = [...community.userIds, ...community.ownerIds];
+    const users = await UserModel.find({ 
+        _id: { $in: userIds } 
+    }).select("profile")
+    .skip(skip)
+    .limit(limit);
+    return users;    
+};
+
 export {
     createUserQuery,
     getUserByIdQuery,
     getUserByEmailQuery,
     getUserByUsernameQuery,
     getUsersOfCommunityQuery,
+    getUsersOfCommunityPaginatedQuery
 }
