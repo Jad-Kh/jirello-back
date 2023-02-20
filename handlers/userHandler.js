@@ -48,7 +48,7 @@ const getCommunityUsersPaginatedHandler = async (req, res, next) => {
             return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
               .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));
         }
-        const { skip, limit } = preparePagination(req.query)
+        const { skip, limit } = preparePagination(req.query);
         const communityUsers = await getUsersOfCommunityPaginatedQuery(communityId, skip, limit);
         const users = await Promise.all(
             communityUsers.map(user => {

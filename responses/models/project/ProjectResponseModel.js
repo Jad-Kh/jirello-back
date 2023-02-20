@@ -1,4 +1,6 @@
-class ProjectResponseModel {
+import { APISignatureResponseModel } from "../API/APISignatureResponseModel.js";
+
+class ProjectResponseModel extends APISignatureResponseModel {
     name = undefined;
     organizerIds = undefined;
     userIds = undefined;
@@ -7,6 +9,7 @@ class ProjectResponseModel {
     taskGroupIds = undefined;
 
     constructor(values) {
+        super(values);
         this.name = values.name;
         this.organizerIds = values.organizerIds;
         this.userIds = values.userIds;

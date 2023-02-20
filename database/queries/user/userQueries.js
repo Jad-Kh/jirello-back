@@ -47,11 +47,20 @@ const getUsersOfCommunityPaginatedQuery = async (communityId, skip, limit) => {
     return users;    
 };
 
+const addCommunityToUserOwnedQuery = async (userId, communityId) => {
+    return await UserModel.updateOne(
+        { _id: userId },
+        { $addToSet: { ownedCommunityIds: communityId } }
+    )
+
+};
+
 export {
     createUserQuery,
     getUserByIdQuery,
     getUserByEmailQuery,
     getUserByUsernameQuery,
     getUsersOfCommunityQuery,
-    getUsersOfCommunityPaginatedQuery
+    getUsersOfCommunityPaginatedQuery,
+    addCommunityToUserOwnedQuery
 }

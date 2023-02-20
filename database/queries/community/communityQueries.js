@@ -54,7 +54,7 @@ const demoteOwnerInCommunityQuery = async (community, userId) => {
     return updatedCommunity;
 };
 
-const promoteUserinCommunityQuery = async (communityId, userId) => {
+const promoteUserInCommunityQuery = async (communityId, userId) => {
     const updatedCommunity = await CommunityModel.findByIdAndUpdate(
         communityId,
         {
@@ -66,6 +66,13 @@ const promoteUserinCommunityQuery = async (communityId, userId) => {
     return updatedCommunity;
 };
 
+const addProjectToCommunityQuery = async (communityId, projectId) => {
+    return await CommunityModel.updateOne(
+        { _id: communityId },
+        { $addToSet: { projectIds: projectId } }
+    );
+};
+
 export {
     createCommunityQuery,
     getCommunityByIdQuery,
@@ -75,5 +82,6 @@ export {
     addUserToCommunityQuery,
     removeUserFromCommunityQuery,
     demoteOwnerInCommunityQuery,
-    promoteUserinCommunityQuery
+    promoteUserInCommunityQuery,
+    addProjectToCommunityQuery
 }

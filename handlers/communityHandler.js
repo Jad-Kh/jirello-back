@@ -5,6 +5,7 @@ import {
     getCommunityByFlagQuery, 
     updateCommunityQuery
 } from "../database/queries/community/communityQueries.js";
+import { addCommunityToUserOwnedQuery } from "../database/queries/user/userQueries.js";
 import { CommunityRequestModel } from "../requests/community/CommunityRequestModel.js";
 import { CommunityErrorResponses } from "../responses/messages/errors/community/communityErrorResponse.js";
 import pkg from "lodash";
@@ -52,6 +53,7 @@ const createCommunityHandler = async (req, res, next) => {
             }
             const newCommunity = new CommunityRequestModel(community);
             const savedCommunity = await createCommunityQuery(newCommunity);
+            await addCommunityToUserOwnedQuery(req.user.id, savedCommunity._id);
             req.community = savedCommunity;
             next();
         }
