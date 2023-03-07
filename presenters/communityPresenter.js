@@ -24,7 +24,29 @@ const updateCommunityPresenter = async (req, res, next) => {
     next();
 };
 
+const addUserToCommunityPresenter = async (req, res, next) => {
+    req.statusCode = CommunitySuccessResponses.ADD_USER_TO_COMMUNITY_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        CommunitySuccessResponses.ADD_USER_TO_COMMUNITY_SUCCESS,
+        null,
+        { }
+    );
+    next();
+};
+
+const removeUserFromCommunityPresenter = async (req, res, next) => {
+    req.statusCode = CommunitySuccessResponses.REMOVE_USER_FROM_COMMUNITY_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        CommunitySuccessResponses.REMOVE_USER_FROM_COMMUNITY_SUCCESS,
+        null,
+        { }
+    );
+    next();
+};
+
 export {
     createCommunityPresenter,
-    updateCommunityPresenter
+    updateCommunityPresenter,
+    addUserToCommunityPresenter,
+    removeUserFromCommunityPresenter
 }

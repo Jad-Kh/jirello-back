@@ -38,8 +38,20 @@ const updateCommunityValidationScheme = Joi.object().keys({
     })  
 });
 
+const addUserToCommunityValidationScheme = Joi.object().keys({
+    communityId: Joi.string().required().alphanum(),
+    userId: Joi.string().required().alphanum(),
+});
+
+const removeUserFromCommunityValidationScheme = Joi.object().keys({
+    communityId: Joi.string().required().alphanum(),
+    userId: Joi.string().required().alphanum(),    
+});
+
 export {
     communityByIdValidationScheme,
     createCommunityValidationScheme,
-    updateCommunityValidationScheme
+    updateCommunityValidationScheme,
+    addUserToCommunityValidationScheme,
+    removeUserFromCommunityValidationScheme
 }

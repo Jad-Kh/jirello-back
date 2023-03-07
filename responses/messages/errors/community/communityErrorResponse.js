@@ -24,6 +24,22 @@ const CommunityErrorResponses = {
         message: "Error updating community",
         code: 400
     },
+    COMMUNITY_USER_ADDING_ERROR: {
+        message: "Error adding user to communnity",
+        code: 400
+    },
+    COMMUNITY_USER_REMOVING_ERROR: {
+        message: "Error removing user from community",
+        code: 400
+    },
+    COMMUNITY_USER_FOUND: {
+        message: "User is already part of this community",
+        code: 400
+    },
+    COMMUNITY_USER_NOT_FOUND: {
+        message: "User is not part of this community",
+        code: 404
+    }
 }
 
 export {

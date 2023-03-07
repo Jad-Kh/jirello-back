@@ -47,12 +47,18 @@ const getUsersOfCommunityPaginatedQuery = async (communityId, skip, limit) => {
     return users;    
 };
 
+const addCommunityToUserQuery = async (userId, communityId) => {
+    return await UserModel.updateOne(
+        { _id: userId },
+        { $addToSet: { communityIds: communityId } }
+    )
+};
+
 const addCommunityToUserOwnedQuery = async (userId, communityId) => {
     return await UserModel.updateOne(
         { _id: userId },
         { $addToSet: { ownedCommunityIds: communityId } }
     )
-
 };
 
 export {
@@ -62,5 +68,6 @@ export {
     getUserByUsernameQuery,
     getUsersOfCommunityQuery,
     getUsersOfCommunityPaginatedQuery,
+    addCommunityToUserQuery,
     addCommunityToUserOwnedQuery
 }

@@ -16,6 +16,11 @@ const UserModelSchema = new mongoose.Schema(
             default: false,
             required: true,
         },
+        communityIds: {
+            type: Array,
+            default: [],
+            required: true,
+        },
         ownedCommunityIds: {
             type: Array,
             default: [],

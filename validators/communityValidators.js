@@ -1,8 +1,10 @@
 import { CommunityByIdRequestModel } from "../requests/community/CommunityByIdRequestModel.js";
 import { CreateCommunityRequestModel } from "../requests/community/CreateCommunityRequestModel.js";
 import { 
+  addUserToCommunityValidationScheme,
   communityByIdValidationScheme, 
   createCommunityValidationScheme, 
+  removeUserFromCommunityValidationScheme, 
   updateCommunityValidationScheme 
 } from "./schemes/communityValidationSchemes.js";
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
@@ -10,23 +12,25 @@ import { CommunityErrorResponses } from "../responses/messages/errors/community/
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
 import { prepareErrorLog } from "../errorLog/errorLog.js"
 import { UpdateCommunityRequestModel } from "../requests/community/UpdateCommunityRequestModel.js";
+import { AddUserToCommunityRequestModel } from "../requests/community/AddUserToCommunityRequestModel.js";
+import { RemoveUserFromCommunityRequestModel } from "../requests/community/RemoveUserFromCommunityRequestModel.js";
 
 const communityByIdValidator = (req, res, next) => {
-    try {
-      const bodyReceived = new CommunityByIdRequestModel(req.params);
-      const result = communityByIdValidationScheme.validate(bodyReceived);
-      if (result.error) {
-        return res.status(CommunityErrorResponses.ID_ERROR.code)
-          .json(prepareErrorResponse(CommunityErrorResponses.ID_ERROR, result?.error?.message));
-      } else {
-        req.requestModel = bodyReceived;
-        next();
-      }
-    } catch (error) {
-      prepareErrorLog(error, communityByIdValidator.name);
-      return res.status(CommonErrorResponses.SERVER_ERROR.code)
-        .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+  try {
+    const bodyReceived = new CommunityByIdRequestModel(req.params);
+    const result = communityByIdValidationScheme.validate(bodyReceived);
+    if (result.error) {
+      return res.status(CommunityErrorResponses.ID_ERROR.code)
+        .json(prepareErrorResponse(CommunityErrorResponses.ID_ERROR, result?.error?.message));
+    } else {
+      req.requestModel = bodyReceived;
+      next();
     }
+  } catch (error) {
+    prepareErrorLog(error, communityByIdValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+      .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+  }
 };
 
 const createCommunityValidator = (req, res, next) => {
@@ -58,8 +62,44 @@ const updateCommunityValidator = (req, res, next) => {
       req.requestModel = bodyReceived;
       next();
     }  
-  } catch(error) {
+  } catch (error) {
     prepareErrorLog(error, updateCommunityValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+      .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null)); 
+  }
+};
+
+const addUserToCommunityValidator = (req, res, next) => {
+  try {
+    const bodyReceived = new AddUserToCommunityRequestModel(req.body);
+    const result = addUserToCommunityValidationScheme.validate(bodyReceived);
+    if (result.error) {
+      return res.status(CommunityErrorResponses.COMMUNITY_USER_ADDING_ERROR.code)
+        .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_USER_ADDING_ERROR, result?.error?.message));      
+    } else {
+      req.requestModel = bodyReceived;
+      next();
+    }
+  } catch (error) {
+    prepareErrorLog(error, addUserToCommunityValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+      .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null)); 
+  }
+};
+
+const removeUserFromCommunityValidator = (req, res, next) => {
+  try {
+    const bodyReceived = new RemoveUserFromCommunityRequestModel(req.body);
+    const result = removeUserFromCommunityValidationScheme.validate(bodyReceived);
+    if (result.error) {
+      return res.status(CommunityErrorResponses.COMMUNITY_USER_REMOVING_ERROR.code)
+        .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_USER_REMOVING_ERROR, result?.error?.message));      
+    } else {
+      req.requestModel = bodyReceived;
+      next();
+    }
+  } catch (error) {
+    prepareErrorLog(error, removeUserFromCommunityValidator.name);
     return res.status(CommonErrorResponses.SERVER_ERROR.code)
       .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null)); 
   }
@@ -68,5 +108,7 @@ const updateCommunityValidator = (req, res, next) => {
 export {
     communityByIdValidator,
     createCommunityValidator,
-    updateCommunityValidator
+    updateCommunityValidator,
+    addUserToCommunityValidator,
+    removeUserFromCommunityValidator
 }

@@ -1,9 +1,24 @@
 import express from 'express'
 const communityRoutes = express.Router();
 
-import { createCommunityValidator, updateCommunityValidator } from '../validators/communityValidators.js';
-import { createCommunityHandler, updateCommunityHandler } from '../handlers/communityHandler.js';
-import { createCommunityPresenter, updateCommunityPresenter } from '../presenters/communityPresenter.js';
+import { 
+    addUserToCommunityValidator, 
+    createCommunityValidator, 
+    removeUserFromCommunityValidator, 
+    updateCommunityValidator 
+} from '../validators/communityValidators.js';
+import { 
+    addUserToCommunityHandler, 
+    createCommunityHandler, 
+    removeUserFromCommunityHandler, 
+    updateCommunityHandler 
+} from '../handlers/communityHandler.js';
+import { 
+    addUserToCommunityPresenter, 
+    createCommunityPresenter, 
+    removeUserFromCommunityPresenter, 
+    updateCommunityPresenter 
+} from '../presenters/communityPresenter.js';
 import { communityController } from '../controllers/communityController.js';
 import { tokenSecurity } from '../security/tokenSecurity.js';
 
@@ -22,6 +37,22 @@ communityRoutes.put(
     updateCommunityValidator,
     updateCommunityHandler,
     updateCommunityPresenter,
+    communityController,
+);
+
+communityRoutes.put(
+    "/add-user-to-community",
+    addUserToCommunityValidator,
+    addUserToCommunityHandler,
+    addUserToCommunityPresenter,
+    communityController,
+);
+
+communityRoutes.put(
+    "/remove-user-to-community",
+    removeUserFromCommunityValidator,
+    removeUserFromCommunityHandler,
+    removeUserFromCommunityPresenter,
     communityController,
 );
 

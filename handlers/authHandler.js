@@ -27,6 +27,7 @@ const signUpHandler = async (req, res, next) => {
                 .json(prepareErrorResponse(AuthErrorResponses.USERNAME_EXISTS_ERROR, null));
         } else {
             const isAdmin = false;
+            const communityIds = [];
             const ownedCommunityIds = [];
             const taskIds = [];
             const taskGroupIds = [];
@@ -39,7 +40,7 @@ const signUpHandler = async (req, res, next) => {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(requestModel.password, salt);
             requestModel.password = hashedPassword;
-            const newUserBody = { isAdmin, ownedCommunityIds, profile: requestModel, tasks, notifications };
+            const newUserBody = { isAdmin, communityIds, ownedCommunityIds, profile: requestModel, tasks, notifications };
             const newUser = new CreateUserRequestModel(newUserBody);
             const savedUser = await createUserQuery(newUser);
             req.user = savedUser;

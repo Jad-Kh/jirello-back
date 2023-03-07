@@ -3,11 +3,14 @@ import {
     getCommunityByIdQuery,
     getCommunityByNameQuery, 
     getCommunityByFlagQuery, 
-    updateCommunityQuery
+    updateCommunityQuery,
+    addUserToCommunityQuery,
+    removeUserFromCommunityQuery
 } from "../database/queries/community/communityQueries.js";
-import { addCommunityToUserOwnedQuery } from "../database/queries/user/userQueries.js";
+import { addCommunityToUserOwnedQuery, addCommunityToUserQuery, getUserByIdQuery } from "../database/queries/user/userQueries.js";
 import { CommunityRequestModel } from "../requests/community/CommunityRequestModel.js";
 import { CommunityErrorResponses } from "../responses/messages/errors/community/communityErrorResponse.js";
+import { UserErrorResponses } from "../responses/messages/errors/user/userErrorResponse.js";
 import pkg from "lodash";
 import { prepareErrorLog } from "../errorLog/errorLog.js";
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
@@ -90,7 +93,69 @@ const updateCommunityHandler = async (req, res, next) => {
     }
 };
 
+const addUserToCommunityHandler = async (req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const community = await getCommunityByIdQuery(requestModel.communityId);
+        if (isEmpty(community)) {
+            return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
+              .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));
+        } else {
+            const user = await getUserByIdQuery(requestModel.userId);
+            if (isEmpty(user)) {
+                return res.status(UserErrorResponses.USER_NOT_FOUND.code)
+                  .json(prepareErrorResponse(UserErrorResponses.USER_NOT_FOUND, null));   
+            } else {
+                if(community.userIds.includes(requestModel.userId) || community.ownerIds.includes(requestModel.ownerId)) {
+                    return res.status(CommunityErrorResponses.COMMUNITY_USER_FOUND.code)
+                      .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_USER_FOUND, null));                    
+                } else {
+                    await addUserToCommunityQuery(requestModel.communityId, requestModel.userId);
+                    await addCommunityToUserQuery(requestModel.userId, requestModel.communityId);
+                    next();
+                }
+            }
+        }
+    } catch(error) {
+        prepareErrorLog(error, addUserToCommunityHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));         
+    }
+};
+
+const removeUserFromCommunityHandler = async (req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const community = await getCommunityByIdQuery(requestModel.communityId);
+        if (isEmpty(community)) {
+            return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
+              .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));
+        } else {
+            const user = await getUserByIdQuery(requestModel.userId);
+            if (isEmpty(user)) {
+                return res.status(UserErrorResponses.USER_NOT_FOUND.code)
+                  .json(prepareErrorResponse(UserErrorResponses.USER_NOT_FOUND, null));   
+            } else {
+                if(!community.userIds.includes(requestModel.userId) || !community.ownerIds.includes(requestModel.ownerId)) {
+                    return res.status(CommunityErrorResponses.COMMUNITY_USER_NOT_FOUND.code)
+                      .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_USER_NOT_FOUND, null));                    
+                } else {
+                    await removeUserFromCommunityQuery(requestModel.communityId, requestModel.userId);
+                    await addCommunityToUserQuery(requestModel.userId, requestModel.communityId);
+                    next();
+                }
+            }
+        }
+    } catch(error) {
+        prepareErrorLog(error, removeUserFromCommunityHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));         
+    }
+};
+
 export {
     createCommunityHandler,
-    updateCommunityHandler
+    updateCommunityHandler,
+    addUserToCommunityHandler,
+    removeUserFromCommunityHandler
 }

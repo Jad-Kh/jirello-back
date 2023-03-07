@@ -24,6 +24,10 @@ const UserErrorResponses = {
         message: 'Lastname must be at least 2 characters and at most 25 characters',
         code: 400
     },
+    USER_NOT_FOUND: {
+        message: 'User not found or Id does not exist',
+        code: 404
+    }
 }
 
 export {
