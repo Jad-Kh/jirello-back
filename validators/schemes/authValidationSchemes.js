@@ -20,7 +20,12 @@ const logInValidationScheme = Joi.object().keys({
     password: Joi.string().required()
 });
 
+const recoveryValidationScheme = Joi.object().keys({
+    email: Joi.string().custom(emailValidation),
+});
+
 export {
     signUpValidationScheme,
-    logInValidationScheme
+    logInValidationScheme,
+    recoveryValidationScheme
 }

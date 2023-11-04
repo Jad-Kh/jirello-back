@@ -1,10 +1,10 @@
 import express from 'express'
 const authRoutes = express.Router();
 
-import { signUpValidator, logInValidator } from '../validators/authValidators.js';
-import { signUpHandler, logInHandler} from '../handlers/authHandler.js';
+import { signUpValidator, logInValidator, recoveryValidator } from '../validators/authValidators.js';
+import { signUpHandler, logInHandler, recoveryHandler} from '../handlers/authHandler.js';
 import { signUpSecurity, logInSecurity } from '../security/authSecurity.js';
-import { signUpPresenter, logInPresenter } from '../presenters/authPresenter.js';
+import { signUpPresenter, logInPresenter, recoveryPresenter } from '../presenters/authPresenter.js';
 import { authController } from '../controllers/authController.js';
 
 authRoutes.post(
@@ -24,6 +24,14 @@ authRoutes.post(
     logInPresenter,
     authController,
 );
+
+authRoutes.get(
+    "/recovery-email",
+    recoveryValidator,
+    recoveryHandler,
+    recoveryPresenter,
+    authController,
+)
 
 export {
     authRoutes

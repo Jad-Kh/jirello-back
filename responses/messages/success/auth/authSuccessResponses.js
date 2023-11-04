@@ -7,6 +7,10 @@ const AuthSuccessResponses = {
     LOGIN_SUCCESS: { 
         message: 'User successfully logged in!', 
         code: 200 
+    },
+    RECOVERY_SUCCESS: {
+        message: 'Email successfully fetched',
+        code: 200
     }
 }
 

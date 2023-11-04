@@ -78,7 +78,25 @@ const logInHandler = async (req, res, next) => {
     }
 };
 
+const recoveryHandler = async (req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const user = requestModel?.email && await getUserByEmailQuery(requestModel?.email);
+        if (isEmpty(user)) {
+            return res.status(AuthErrorResponses.EMAIL_NOT_EXISTS_ERROR.code)
+                .json(prepareErrorResponse(AuthErrorResponses.EMAIL_NOT_EXISTS_ERROR, null));
+        }
+        req.user = user;
+        next();
+    } catch(error) {
+        prepareErrorLog(error, recoveryHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+          .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    }
+};
+
 export {
     signUpHandler,
-    logInHandler
+    logInHandler,
+    recoveryHandler
 }

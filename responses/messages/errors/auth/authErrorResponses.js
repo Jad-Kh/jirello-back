@@ -23,6 +23,14 @@ const AuthErrorResponses = {
     LOGIN_USERNAME_ERROR: {
         message: 'Username or password is incorrect.',
         code: 400
+    },
+    EMAIL_NOT_EXISTS_ERROR: {
+        message: 'No account with this email.',
+        code: 404
+    },
+    INVALID_EMAIL: {
+        message: 'Invalid email.',
+        code: 400
     }
 }
 

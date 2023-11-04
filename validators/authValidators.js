@@ -1,11 +1,16 @@
 import { SignUpRequestModel } from "../requests/auth/SignUpRequestModel.js";
 import { LogInRequestModel } from "../requests/auth/LogInRequestModel.js";
-import { signUpValidationScheme, logInValidationScheme } from "./schemes/authValidationSchemes.js";
+import { 
+  signUpValidationScheme, 
+  logInValidationScheme, 
+  recoveryValidationScheme 
+} from "./schemes/authValidationSchemes.js";
 import { parseUsernameOrEmail } from "../helpers/logIn.js";
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
 import { AuthErrorResponses } from "../responses/messages/errors/auth/authErrorResponses.js";
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
 import { prepareErrorLog } from "../errorLog/errorLog.js"
+import { RecoveryRequestModel } from "../requests/auth/RecoveryRequestModel.js";
 
 const signUpValidator = (req, res, next) => {
   try {
@@ -44,7 +49,26 @@ const logInValidator = (req, res, next) => {
   }
 };
 
+const recoveryValidator = (req, res, next) => {
+  try {
+    const bodyReceived = new RecoveryRequestModel(req.params);
+    const result = recoveryValidationScheme.validate(bodyReceived);
+    if(result.error) {
+      return res.status(AuthErrorResponses.INVALID_EMAIL.code)
+        .json(prepareErrorResponse(AuthErrorResponses.INVALID_EMAIL, result?.error?.message));
+    } else {
+      req.requestModel = bodyReceived;
+      next();
+    }
+  } catch (error) {
+    prepareErrorLog(error, recoveryValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+      .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+  }
+}
+
 export {
   signUpValidator,
-  logInValidator
+  logInValidator,
+  recoveryValidator
 }
