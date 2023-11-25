@@ -27,6 +27,10 @@ const UserErrorResponses = {
     USER_NOT_FOUND: {
         message: 'User not found or Id does not exist',
         code: 404
+    },
+    USERNAME_NOT_FOUND: {
+        message: 'Username not found or does not exist',
+        code: 404
     }
 }
 

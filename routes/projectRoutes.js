@@ -19,6 +19,7 @@ projectRoutes.post(
 
 projectRoutes.get(
     "/get-projects-of-community/:id",
+    tokenSecurity,
     communityByIdValidator,
     getProjectsOfCommunityHandler,
     getProjectsOfCommunityPresenter,
@@ -27,6 +28,7 @@ projectRoutes.get(
 
 projectRoutes.get(
     "/get-projects-of-community-paginated/:id",
+    tokenSecurity,
     communityByIdValidator,
     getProjectsOfCommunityPaginatedHandler,
     getProjectsOfCommunityPresenter,

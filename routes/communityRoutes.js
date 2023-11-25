@@ -42,6 +42,7 @@ communityRoutes.put(
 
 communityRoutes.put(
     "/add-user-to-community",
+    tokenSecurity,
     addUserToCommunityValidator,
     addUserToCommunityHandler,
     addUserToCommunityPresenter,
@@ -49,7 +50,8 @@ communityRoutes.put(
 );
 
 communityRoutes.put(
-    "/remove-user-to-community",
+    "/remove-user-from-community",
+    tokenSecurity,
     removeUserFromCommunityValidator,
     removeUserFromCommunityHandler,
     removeUserFromCommunityPresenter,

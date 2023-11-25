@@ -61,6 +61,36 @@ const addCommunityToUserOwnedQuery = async (userId, communityId) => {
     )
 };
 
+const removeCommunityFromUserQuery = async (userId, communityId) => {
+    return await UserModel.updateOne(
+        { _id: userId },
+        { $pull: { communityIds: communityId } }
+    );
+};
+
+const getUsersByRoleIdQuery = async (roleId) => {
+    const users = await UserModel.find({
+        "roles.roleIds": roleId,
+    }).select("profile");
+    return users;
+};
+
+const getUsersByRoleIdPaginatedQuery = async (roleId, skip, limit) => {
+    const users = await UserModel.find({
+        "roles.roleIds": roleId,
+    }).select("profile")
+    .skip(skip)
+    .limit(limit);
+    return users;
+};
+
+const assignRoleToUserQuery = async (userId, roleId) => {
+    return await UserModel.updateOne(
+        { _id: userId },
+        { $addToSet: { roleIds: roleId } }
+    )
+};
+
 export {
     createUserQuery,
     getUserByIdQuery,
@@ -69,5 +99,9 @@ export {
     getUsersOfCommunityQuery,
     getUsersOfCommunityPaginatedQuery,
     addCommunityToUserQuery,
-    addCommunityToUserOwnedQuery
+    addCommunityToUserOwnedQuery,
+    removeCommunityFromUserQuery,
+    getUsersByRoleIdQuery,
+    getUsersByRoleIdPaginatedQuery,
+    assignRoleToUserQuery
 }

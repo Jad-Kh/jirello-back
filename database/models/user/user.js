@@ -5,6 +5,7 @@ import aggregatePaginate from "mongoose-aggregate-paginate-v2";
 import { UserProfile } from "./userProfile/userProfile.js";
 import { UserTasks } from "./userTasks/userTasks.js";
 import { UserNotifications } from "./userNotifications/userNotifications.js";
+import { UserRoles } from "./userRoles/userRoles.js";
 
 const UserModelSchema = new mongoose.Schema(
     {
@@ -31,7 +32,15 @@ const UserModelSchema = new mongoose.Schema(
         },
         notifications: {
             type: UserNotifications,
-        }
+        },
+        roles: {
+            type: UserRoles
+        },
+        permittedScreenIds: {
+            type: Array,
+            default: [],
+            required: true,
+        },
     },
     {
         timestamps: true,

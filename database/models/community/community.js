@@ -35,8 +35,18 @@ const CommunityModelSchema = new mongoose.Schema(
             required: true,
         },
         permissions: {
-            type: CommunityPermissions
+            type: CommunityPermissions,
         },
+        roleIds: {
+            type: Array,
+            default: [],
+            required: true,
+        },
+        screenIds: {
+            type: Array,
+            default: [],
+            required: true,
+        }
     },
     {
         timestamps: true,

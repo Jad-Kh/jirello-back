@@ -141,7 +141,7 @@ const removeUserFromCommunityHandler = async (req, res, next) => {
                       .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_USER_NOT_FOUND, null));                    
                 } else {
                     await removeUserFromCommunityQuery(requestModel.communityId, requestModel.userId);
-                    await addCommunityToUserQuery(requestModel.userId, requestModel.communityId);
+                    await removeUserFromCommunityQuery(requestModel.userId, requestModel.communityId);
                     next();
                 }
             }
