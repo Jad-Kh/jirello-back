@@ -91,6 +91,13 @@ const assignRoleToUserQuery = async (userId, roleId) => {
     )
 };
 
+const removeRoleFromUserQuery = async (userId, roleId) => {
+    return await UserModel.updateOne(
+        { _id: userId },
+        { $pull: { roleIds: roleId } }
+    );
+};
+
 export {
     createUserQuery,
     getUserByIdQuery,
@@ -103,5 +110,6 @@ export {
     removeCommunityFromUserQuery,
     getUsersByRoleIdQuery,
     getUsersByRoleIdPaginatedQuery,
-    assignRoleToUserQuery
+    assignRoleToUserQuery,
+    removeRoleFromUserQuery
 }

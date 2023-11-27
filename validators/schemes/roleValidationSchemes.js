@@ -5,11 +5,17 @@ const roleByIdValidationScheme = Joi.object().keys({
 });
 
 const assignUserToRoleValidationScheme = Joi.object().keys({
-    communityId: Joi.string().required().alphanum(),
+    roleId: Joi.string().required().alphanum(),
+    userId: Joi.string().required().alphanum(),
+});
+
+const removeUserFromRoleValidationScheme = Joi.object().keys({
+    roleId: Joi.string().required().alphanum(),
     userId: Joi.string().required().alphanum(),
 });
 
 export {
     roleByIdValidationScheme,
-    assignUserToRoleValidationScheme
+    assignUserToRoleValidationScheme,
+    removeUserFromRoleValidationScheme
 }

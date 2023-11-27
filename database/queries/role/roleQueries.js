@@ -18,8 +18,16 @@ const addUserToRoleQuery = async (roleId, userId) => {
     );
 };
 
+const removeUserFromRoleQuery = async (roleId, userId) => {
+    return await RoleModel.updateOne(
+        { _id: roleId }, 
+        { $pull: { userIds: userId } }
+    );
+};
+
 export {
     createRoleQuery,
     getRoleByIdQuery,
-    addUserToRoleQuery
+    addUserToRoleQuery,
+    removeUserFromRoleQuery
 }

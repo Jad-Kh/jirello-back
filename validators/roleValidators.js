@@ -2,27 +2,29 @@ import { RoleByIdRequestModel } from "../requests/role/RoleByIdRequestModel.js";
 import { AssignUserToRoleRequestModel } from "../requests/role/AssignUserToRoleRequestModel.js";
 import { 
   roleByIdValidationScheme,
-  assignUserToRoleValidationScheme 
+  assignUserToRoleValidationScheme, 
+  removeUserFromRoleValidationScheme
 } from "./schemes/roleValidationSchemes.js";
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse";
 import { RoleErrorResponses } from "../responses/messages/errors/role/roleErrorResponse";
+import { RemoveUserFromRoleRequestModel } from "../requests/role/RemoveUserFromRoleRequestModel.js";
 
 const roleByIdValidator = (req, res, next) => {
-    try {
-      const bodyReceived = new RoleByIdRequestModel(req.params);
-      const result = roleByIdValidationScheme.validate(bodyReceived);
-      if (result.error) {
-        return res.status(RoleErrorResponses.ID_ERROR.code)
-          .json(prepareErrorResponse(RoleErrorResponses.ID_ERROR, result?.error?.message));
-      } else {
-        req.requestModel = bodyReceived;
-        next();
-      }
-    } catch (error) {
-      prepareErrorLog(error, roleByIdValidator.name);
-      return res.status(CommonErrorResponses.SERVER_ERROR.code)
-        .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+  try {
+    const bodyReceived = new RoleByIdRequestModel(req.params);
+    const result = roleByIdValidationScheme.validate(bodyReceived);
+    if (result.error) {
+      return res.status(RoleErrorResponses.ID_ERROR.code)
+        .json(prepareErrorResponse(RoleErrorResponses.ID_ERROR, result?.error?.message));
+    } else {
+      req.requestModel = bodyReceived;
+      next();
     }
+  } catch (error) {
+    prepareErrorLog(error, roleByIdValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+      .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+  }
 };
 
 const assignRoleToUserValidator = (req, res, next) => {
@@ -43,7 +45,26 @@ const assignRoleToUserValidator = (req, res, next) => {
   }
 };
 
+const removeUserFromRoleValidator = (req, res, next) => {
+  try {
+    const bodyReceived = new RemoveUserFromRoleRequestModel(req.body);
+    const result = removeUserFromRoleValidationScheme.validate(bodyReceived);
+    if (result.error) {
+      return res.status(RoleErrorResponses.ROLE_USER_REMOVING_ERROR.code)
+        .json(prepareErrorResponse(RoleErrorResponses.ROLE_USER_REMOVING_ERROR, result?.error?.message));      
+    } else {
+      req.requestModel = bodyReceived;
+      next();
+    }
+  } catch (error) {
+    prepareErrorLog(error, removeUserFromRoleValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+      .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null)); 
+  }
+};
+
 export {
     roleByIdValidator,
-    assignRoleToUserValidator
+    assignRoleToUserValidator,
+    removeUserFromRoleValidator
 }
