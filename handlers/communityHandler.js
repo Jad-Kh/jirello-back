@@ -34,6 +34,10 @@ const createCommunityHandler = async (req, res, next) => {
             const userIds = [];
             const projectIds = [];
             const template = "Normal";
+            const roleIds = [];
+            const screenIds = [];
+            const validationLevel = 0;
+            const requiredValidationLevel = 0;
             const permissions = {
                 canUserViewOtherTasks: requestModel.canUserViewOtherTasks,
                 canUserViewOtherTaskGroups: requestModel.canUserViewOtherTaskGroups,
@@ -51,7 +55,11 @@ const createCommunityHandler = async (req, res, next) => {
                 ownerIds,
                 userIds,
                 projectIds,
-                template,
+                template, 
+                roleIds,
+                screenIds,
+                validationLevel,
+                requiredValidationLevel,
                 permissions
             }
             const newCommunity = new CommunityRequestModel(community);

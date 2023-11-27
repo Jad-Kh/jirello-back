@@ -46,6 +46,16 @@ const CommunityModelSchema = new mongoose.Schema(
             type: Array,
             default: [],
             required: true,
+        },
+        validationLevel: {
+            type: Number,
+            default: 0,
+            required: true,
+        },
+        requiredValidationLevel: {
+            type: Number,
+            default: 0,
+            required: true,
         }
     },
     {

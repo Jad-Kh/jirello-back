@@ -25,6 +25,11 @@ const ScreenModelSchema = new mongoose.Schema(
         protected: {
             type: Boolean,
             default: false,
+        },
+        allowedUserIds: {
+            type: Array,
+            default: [],
+            required: true,
         }
     },
     {
