@@ -1,24 +1,18 @@
 class CommunityPermissionsRequestModel {
-    canUserViewOtherTasks = undefined;
-    canUserViewOtherTaskGroups = undefined;
-    canUserCreateTasks = undefined;
-    canUserCreateTaskGroups = undefined;
-    canUserEditTasks = undefined;
-    canUserSetTaskToComplete = undefined;
-    canUserSetTaskToIncomplete = undefined;
-    canUserEditTaskGroups = undefined;
-    canUserViewOtherProjects = undefined;
+    tasks = undefined;
+    taskGroups = undefined;
+    meetings = undefined;
+    projects = undefined;
+    screens = undefined;
+    roles = undefined;
 
     constructor(values) {
-        this.canUserViewOtherTasks = values?.canUserViewOtherTasks;
-        this.canUserViewOtherTaskGroups = values?.canUserViewOtherTaskGroups;
-        this.canUserCreateTasks = values?.canUserCreateTasks;
-        this.canUserCreateTaskGroups = values?.canUserCreateTaskGroups;
-        this.canUserEditTasks = values?.canUserEditTasks;
-        this.canUserSetTaskToComplete = values?.canUserSetTaskToComplete;
-        this.canUserSetTaskToIncomplete = values?.canUserSetTaskToIncomplete;
-        this.canUserEditTaskGroups = values?.canUserEditTaskGroups;
-        this.canUserViewOtherProjects = values?.canUserViewOtherProjects;
+        this.tasks = values.tasks;
+        this.taskGroups = values.taskGroups;
+        this.meetings = values.meetings;
+        this.projects = values.projects;
+        this.screens = values.screens;
+        this.roles = values.roles;
     }
 }
 

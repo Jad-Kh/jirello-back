@@ -39,15 +39,12 @@ const createCommunityHandler = async (req, res, next) => {
             const validationLevel = 0;
             const requiredValidationLevel = 0;
             const permissions = {
-                canUserViewOtherTasks: requestModel.canUserViewOtherTasks,
-                canUserViewOtherTaskGroups: requestModel.canUserViewOtherTaskGroups,
-                canUserCreateTasks: requestModel.canUserCreateTasks,
-                canUserCreateTaskGroups: requestModel.canUserCreateTaskGroups,
-                canUserEditTasks: requestModel.canUserEditTasks,
-                canUserSetTaskToComplete: requestModel.canUserSetTaskToComplete,
-                canUserSetTaskToIncomplete: requestModel.canUserSetTaskToIncomplete,
-                canUserEditTaskGroups: requestModel.canUserEditTaskGroups,
-                canUserViewOtherProjects: requestModel.canUserViewOtherProjects, 
+                tasks : requestModel.tasks,
+                taskGroups : requestModel.taskGroups,
+                meetings : requestModel.meetings,
+                projects : requestModel.projects,
+                screens : requestModel.screens,
+                roles : requestModel.roles
             }
             const community = {
                 name: requestModel.name,

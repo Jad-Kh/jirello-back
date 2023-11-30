@@ -1,43 +1,38 @@
 import mongoose from "mongoose";
+import { Permissions } from "../../../../helpers/permissions";
 
 const CommunityPermissions = new mongoose.Schema(
     {
-        canUserViewOtherTasks: {
-            type: Boolean,
-            default: false,
+        tasks: {
+            type: Array,
+            default: [Permissions.READ_OWN],
+            required: true,
         },
-        canUserViewOtherTaskGroups: {
-            type: Boolean,
-            default: false,
+        taskGroups: {
+            type: Array,
+            default: [Permissions.READ_OWN],
+            required: true,
         },
-        canUserCreateTasks: {
-            type: Boolean,
-            default: false,
+        meetings: {
+            type: Array,
+            default: [Permissions.READ_OWN],
+            required: true,
         },
-        canUserCreateTaskGroups: {
-            type: Boolean,
-            default: false,
+        projects: {
+            type: Array,
+            default: [Permissions.READ_OWN],
+            required: true,
         },
-        canUserEditTasks: {
-            type: Boolean,
-            default: false,
+        screens: {
+            type: Array,
+            default: [Permissions.READ_OWN],
+            required: true,
         },
-        canUserSetTaskToComplete: {
-            type: Boolean,
-            default: false,
-        },
-        canUserSetTaskToIncomplete: {
-            type: Boolean,
-            default: false,
-        },
-        canUserEditTaskGroups: {
-            type: Boolean,
-            default: false,
-        },
-        canUserViewOtherProjects: {
-            type: Boolean,
-            default: false,
-        },
+        roles: {
+            type: Array,
+            default: [Permissions.READ_OWN],
+            required: true,
+        }
     },
     {
         timestamps: true,
