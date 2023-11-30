@@ -16,6 +16,10 @@ const CommunitySuccessResponses = {
         message: 'User successfully removed from community!',
         code: 200
     },
+    ADD_PROJECT_TO_COMMUNITY_SUCCESS: {
+        message: 'Project successfully added to community!',
+        code: 200
+    }
 }
 
 export {

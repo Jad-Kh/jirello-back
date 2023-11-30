@@ -2,18 +2,21 @@ import express from 'express'
 const communityRoutes = express.Router();
 
 import { 
+    addProjectToCommunityValidator,
     addUserToCommunityValidator, 
     createCommunityValidator, 
     removeUserFromCommunityValidator, 
     updateCommunityValidator 
 } from '../validators/communityValidators.js';
 import { 
+    addProjectToCommunityHandler,
     addUserToCommunityHandler, 
     createCommunityHandler, 
     removeUserFromCommunityHandler, 
     updateCommunityHandler 
 } from '../handlers/communityHandler.js';
 import { 
+    addProjectToCommunityPresenter,
     addUserToCommunityPresenter, 
     createCommunityPresenter, 
     removeUserFromCommunityPresenter, 
@@ -55,6 +58,15 @@ communityRoutes.put(
     removeUserFromCommunityValidator,
     removeUserFromCommunityHandler,
     removeUserFromCommunityPresenter,
+    communityController,
+);
+
+communityRoutes.put(
+    "/add-project-to-community",
+    tokenSecurity,
+    addProjectToCommunityValidator,
+    addProjectToCommunityHandler,
+    addProjectToCommunityPresenter,
     communityController,
 );
 

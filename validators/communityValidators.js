@@ -1,6 +1,7 @@
 import { CommunityByIdRequestModel } from "../requests/community/CommunityByIdRequestModel.js";
 import { CreateCommunityRequestModel } from "../requests/community/CreateCommunityRequestModel.js";
 import { 
+  addProjectToCommunityValidationScheme,
   addUserToCommunityValidationScheme,
   communityByIdValidationScheme, 
   createCommunityValidationScheme, 
@@ -14,6 +15,7 @@ import { prepareErrorLog } from "../errorLog/errorLog.js"
 import { UpdateCommunityRequestModel } from "../requests/community/UpdateCommunityRequestModel.js";
 import { AddUserToCommunityRequestModel } from "../requests/community/AddUserToCommunityRequestModel.js";
 import { RemoveUserFromCommunityRequestModel } from "../requests/community/RemoveUserFromCommunityRequestModel.js";
+import { AddProjectToCommunityRequestModel } from "../requests/community/AddProjectToCommunityRequestModel.js";
 
 const communityByIdValidator = (req, res, next) => {
   try {
@@ -105,10 +107,29 @@ const removeUserFromCommunityValidator = (req, res, next) => {
   }
 };
 
+const addProjectToCommunityValidator = (req, res, next) => {
+  try {
+    const bodyReceived = new AddProjectToCommunityRequestModel(req.body);
+    const result = addProjectToCommunityValidationScheme.validate(bodyReceived);
+    if (result.error) {
+      return res.status(CommonErrorResponses.REQUIRED.code)
+        .json(prepareErrorResponse(CommonErrorResponses.REQUIRED, result?.error?.message));      
+    } else {
+      req.requestModel = bodyReceived;
+      next();
+    }
+  } catch (error) {
+    prepareErrorLog(error, removeUserFromCommunityValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+      .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null)); 
+  }
+};
+
 export {
     communityByIdValidator,
     createCommunityValidator,
     updateCommunityValidator,
     addUserToCommunityValidator,
-    removeUserFromCommunityValidator
+    removeUserFromCommunityValidator,
+    addProjectToCommunityValidator
 }

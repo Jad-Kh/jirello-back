@@ -5,9 +5,11 @@ import {
     getCommunityByFlagQuery, 
     updateCommunityQuery,
     addUserToCommunityQuery,
-    removeUserFromCommunityQuery
+    removeUserFromCommunityQuery,
+    addProjectToCommunityQuery
 } from "../database/queries/community/communityQueries.js";
-import { addCommunityToUserOwnedQuery, addCommunityToUserQuery, getUserByIdQuery } from "../database/queries/user/userQueries.js";
+import { getProjectByIdQuery, updateProjectCommunityQuery } from "../database/queries/project/projectQueries.js";
+import { addCommunityToUserOwnedQuery, addCommunityToUserQuery, getUserByIdQuery, removeCommunityFromUserQuery } from "../database/queries/user/userQueries.js";
 import { CommunityRequestModel } from "../requests/community/CommunityRequestModel.js";
 import { CommunityErrorResponses } from "../responses/messages/errors/community/communityErrorResponse.js";
 import { UserErrorResponses } from "../responses/messages/errors/user/userErrorResponse.js";
@@ -15,6 +17,7 @@ import pkg from "lodash";
 import { prepareErrorLog } from "../errorLog/errorLog.js";
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
+import { ProjectErrorResponses } from "../responses/messages/errors/project/projectErrorResponses.js";
 
 const { isEmpty } = pkg;
     
@@ -146,7 +149,7 @@ const removeUserFromCommunityHandler = async (req, res, next) => {
                       .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_USER_NOT_FOUND, null));                    
                 } else {
                     await removeUserFromCommunityQuery(requestModel.communityId, requestModel.userId);
-                    await removeUserFromCommunityQuery(requestModel.userId, requestModel.communityId);
+                    await removeCommunityFromUserQuery(requestModel.userId, requestModel.communityId);
                     next();
                 }
             }
@@ -158,9 +161,33 @@ const removeUserFromCommunityHandler = async (req, res, next) => {
     }
 };
 
+const addProjectToCommunityHandler = async (req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const community = await getCommunityByIdQuery(requestModel.communityId);
+        const project = await getProjectByIdQuery(requestModel.projectId);
+        if (isEmpty(community)) {
+            return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
+              .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));
+        } else if(isEmpty(project)) {
+            return res.status(ProjectErrorResponses.PROJECT_NOT_FOUND.code)
+              .json(prepareErrorResponse(ProjectErrorResponses.PROJECT_NOT_FOUND, null));            
+        } else {
+            await addProjectToCommunityQuery(requestModel.communityId, requestModel.projectId);
+            await updateProjectCommunityQuery(requestModel.projectId, requestModel.communityId);
+            next();            
+        }
+    } catch(error) {
+        prepareErrorLog(error, addProjectToCommunityHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));         
+    }
+};
+
 export {
     createCommunityHandler,
     updateCommunityHandler,
     addUserToCommunityHandler,
-    removeUserFromCommunityHandler
+    removeUserFromCommunityHandler,
+    addProjectToCommunityHandler
 }

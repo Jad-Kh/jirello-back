@@ -5,6 +5,13 @@ const createProjectQuery = async (body) => {
     return await ProjectModel(body).save();
 };
 
+const getProjectByIdQuery = async (id) => {
+    const project = await ProjectModel.findOne({
+        _id: id
+    });
+    return project;
+};
+
 const getProjectByNameQuery = async (name) => {
     const project = await ProjectModel.findOne({
         name: name,
@@ -31,9 +38,18 @@ const getProjectsOfCommunityPaginatedQuery = async (communityId, skip, limit) =>
     return projects;    
 };
 
+const updateProjectCommunityQuery = async (projectId, communityId) => {
+    return await ProjectModel.findByIdAndUpdate(
+        projectId,
+        { communityId: communityId }
+    );
+};
+
 export {
     createProjectQuery,
+    getProjectByIdQuery,
     getProjectByNameQuery,
     getProjectsOfCommunityQuery,
-    getProjectsOfCommunityPaginatedQuery
+    getProjectsOfCommunityPaginatedQuery,
+    updateProjectCommunityQuery
 }

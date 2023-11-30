@@ -36,7 +36,7 @@ const ProjectModelSchema = new mongoose.Schema(
     {
         timestamps: true,
     }
-)
+);
 
 ProjectModelSchema.plugin(mongoosePaginate);
 ProjectModelSchema.plugin(aggregatePaginate);
