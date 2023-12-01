@@ -54,6 +54,13 @@ const addProjectToCommunityQuery = async (communityId, projectId) => {
     );
 };
 
+const removeProjectFromCommunityQuery = async (communityId, projectId) => {
+    return await CommunityModel.updateOne(
+        { _id: communityId },
+        { $pull: { projectIds: projectId } }
+    );
+};
+
 export {
     createCommunityQuery,
     getCommunityByIdQuery,
@@ -62,5 +69,6 @@ export {
     updateCommunityQuery,
     addUserToCommunityQuery,
     removeUserFromCommunityQuery,
-    addProjectToCommunityQuery
+    addProjectToCommunityQuery,
+    removeProjectFromCommunityQuery
 }

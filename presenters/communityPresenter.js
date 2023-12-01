@@ -54,10 +54,21 @@ const addProjectToCommunityPresenter = async (req, res, next) => {
     next();
 };
 
+const removeProjectFromCommunityPresenter = async (req, res, next) => {
+    req.statusCode = CommunitySuccessResponses.REMOVE_PROJECT_FROM_COMMUNITY_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        CommunitySuccessResponses.REMOVE_PROJECT_FROM_COMMUNITY_SUCCESS,
+        null,
+        { }
+    );
+    next();
+};
+
 export {
     createCommunityPresenter,
     updateCommunityPresenter,
     addUserToCommunityPresenter,
     removeUserFromCommunityPresenter,
-    addProjectToCommunityPresenter
-}
+    addProjectToCommunityPresenter,
+    removeProjectFromCommunityPresenter
+};

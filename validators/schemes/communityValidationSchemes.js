@@ -47,11 +47,17 @@ const addProjectToCommunityValidationScheme = Joi.object().keys({
     projectId: Joi.string().required().alphanum(),
 });
 
+const removeProjectFromCommunityValidationScheme = Joi.object().keys({
+    communityId: Joi.string().required().alphanum(),
+    projectId: Joi.string().required().alphanum(),
+});
+
 export {
     communityByIdValidationScheme,
     createCommunityValidationScheme,
     updateCommunityValidationScheme,
     addUserToCommunityValidationScheme,
     removeUserFromCommunityValidationScheme,
-    addProjectToCommunityValidationScheme
+    addProjectToCommunityValidationScheme,
+    removeProjectFromCommunityValidationScheme
 }

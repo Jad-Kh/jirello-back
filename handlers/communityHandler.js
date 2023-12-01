@@ -6,7 +6,8 @@ import {
     updateCommunityQuery,
     addUserToCommunityQuery,
     removeUserFromCommunityQuery,
-    addProjectToCommunityQuery
+    addProjectToCommunityQuery,
+    removeProjectFromCommunityQuery
 } from "../database/queries/community/communityQueries.js";
 import { getProjectByIdQuery, updateProjectCommunityQuery } from "../database/queries/project/projectQueries.js";
 import { addCommunityToUserOwnedQuery, addCommunityToUserQuery, getUserByIdQuery, removeCommunityFromUserQuery } from "../database/queries/user/userQueries.js";
@@ -184,10 +185,34 @@ const addProjectToCommunityHandler = async (req, res, next) => {
     }
 };
 
+const removeProjectFromCommunityHandler = async (req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const community = await getCommunityByIdQuery(requestModel.communityId);
+        const project = await getProjectByIdQuery(requestModel.projectId);
+        if (isEmpty(community)) {
+            return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
+              .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));
+        } else if(isEmpty(project)) {
+            return res.status(ProjectErrorResponses.PROJECT_NOT_FOUND.code)
+              .json(prepareErrorResponse(ProjectErrorResponses.PROJECT_NOT_FOUND, null));            
+        } else {
+            await removeProjectFromCommunityQuery(requestModel.communityId, requestModel.projectId);
+            await updateProjectCommunityQuery(requestModel.projectId, '');
+            next();            
+        }
+    } catch(error) {
+        prepareErrorLog(error, removeProjectFromCommunityHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));         
+    }
+};
+
 export {
     createCommunityHandler,
     updateCommunityHandler,
     addUserToCommunityHandler,
     removeUserFromCommunityHandler,
-    addProjectToCommunityHandler
+    addProjectToCommunityHandler,
+    removeProjectFromCommunityHandler
 }

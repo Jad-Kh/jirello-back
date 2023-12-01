@@ -5,6 +5,7 @@ import {
     addProjectToCommunityValidator,
     addUserToCommunityValidator, 
     createCommunityValidator, 
+    removeProjectFromCommunityValidator, 
     removeUserFromCommunityValidator, 
     updateCommunityValidator 
 } from '../validators/communityValidators.js';
@@ -12,6 +13,7 @@ import {
     addProjectToCommunityHandler,
     addUserToCommunityHandler, 
     createCommunityHandler, 
+    removeProjectFromCommunityHandler, 
     removeUserFromCommunityHandler, 
     updateCommunityHandler 
 } from '../handlers/communityHandler.js';
@@ -19,6 +21,7 @@ import {
     addProjectToCommunityPresenter,
     addUserToCommunityPresenter, 
     createCommunityPresenter, 
+    removeProjectFromCommunityPresenter, 
     removeUserFromCommunityPresenter, 
     updateCommunityPresenter 
 } from '../presenters/communityPresenter.js';
@@ -67,6 +70,15 @@ communityRoutes.put(
     addProjectToCommunityValidator,
     addProjectToCommunityHandler,
     addProjectToCommunityPresenter,
+    communityController,
+);
+
+communityRoutes.put(
+    "/remove-project-from-community",
+    tokenSecurity,
+    removeProjectFromCommunityValidator,
+    removeProjectFromCommunityHandler,
+    removeProjectFromCommunityPresenter,
     communityController,
 );
 
