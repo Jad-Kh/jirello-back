@@ -12,6 +12,14 @@ const getProjectByIdQuery = async (id) => {
     return project;
 };
 
+const updateProjectQuery = async (id, updates) => {
+    return await ProjectModel.findByIdAndUpdate(
+        id,
+        updates,
+        { new: true }
+    );
+};
+
 const getProjectByNameQuery = async (name) => {
     const project = await ProjectModel.findOne({
         name: name,
@@ -48,6 +56,7 @@ const updateProjectCommunityQuery = async (projectId, communityId) => {
 export {
     createProjectQuery,
     getProjectByIdQuery,
+    updateProjectQuery,
     getProjectByNameQuery,
     getProjectsOfCommunityQuery,
     getProjectsOfCommunityPaginatedQuery,

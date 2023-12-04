@@ -5,6 +5,14 @@ const createProjectValidationScheme = Joi.object().keys({
     communityId: Joi.string().alphanum().required()
 });
 
+const updateProjectValidationScheme = Joi.object().keys({
+    name: Joi.string().required(),
+    organizerIds: Joi.array().required(),
+    userIds: Joi.array().required(),
+    communityId: Joi.string().alphanum().required()
+});
+
 export {
-    createProjectValidationScheme
+    createProjectValidationScheme,
+    updateProjectValidationScheme
 }

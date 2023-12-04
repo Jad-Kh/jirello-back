@@ -1,9 +1,9 @@
 import express from 'express'
 const projectRoutes = express.Router();
 
-import { createProjectValidator } from '../validators/projectValidators.js';
-import { createProjectHandler, getProjectsOfCommunityHandler, getProjectsOfCommunityPaginatedHandler } from '../handlers/projectHandler.js';
-import { createProjectPresenter, getProjectsOfCommunityPresenter } from '../presenters/projectPresenter.js';
+import { createProjectValidator, updateProjectValidator } from '../validators/projectValidators.js';
+import { createProjectHandler, getProjectsOfCommunityHandler, getProjectsOfCommunityPaginatedHandler, updateProjectHandler } from '../handlers/projectHandler.js';
+import { createProjectPresenter, getProjectsOfCommunityPresenter, updateProjectPresenter } from '../presenters/projectPresenter.js';
 import { projectController } from '../controllers/projectController.js';
 import { tokenSecurity } from '../security/tokenSecurity.js';
 import { communityByIdValidator } from "../validators/communityValidators.js"
@@ -14,7 +14,16 @@ projectRoutes.post(
     createProjectValidator,
     createProjectHandler,
     createProjectPresenter,
-    projectController,
+    projectController
+);
+
+projectRoutes.put(
+    "/update-project",
+    tokenSecurity,
+    updateProjectValidator,
+    updateProjectHandler,
+    updateProjectPresenter,
+    projectController
 );
 
 projectRoutes.get(

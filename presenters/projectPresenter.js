@@ -14,6 +14,17 @@ const createProjectPresenter = async (req, res, next) => {
     next();
 };
 
+const updateProjectPresenter = async (req, res, next) => {
+    const requestModel = new ProjectResponseModel(req.project);
+    req.statusCode = ProjectSuccessResponses.UPDATE_PROJECT_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        ProjectSuccessResponses.UPDATE_PROJECT_SUCCESS,
+        null,
+        requestModel
+    );
+    next();
+};
+
 const getProjectsOfCommunityPresenter = async (req, res, next) => {
     const responseModel = new ProjectsOfCommunityResponseModel(req.projects);
     req.statusCode = ProjectSuccessResponses.PROJECTS_OF_COMMUNITY_SUCCESS.code;
@@ -27,5 +38,6 @@ const getProjectsOfCommunityPresenter = async (req, res, next) => {
 
 export {
     createProjectPresenter,
+    updateProjectPresenter,
     getProjectsOfCommunityPresenter
 }

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Permissions } from "../../../../helpers/permissions";
+import { Permissions } from "../../../../helpers/permissions.js";
 
 const CommunityPermissions = new mongoose.Schema(
     {

@@ -11,6 +11,10 @@ const ProjectErrorResponses = {
     PROJECT_NOT_FOUND: {
         message: 'Project id not found',
         code: 404
+    },
+    PROJECT_UPDATE_ERROR: {
+        message: 'Error updating project',
+        code: 400
     }
 }
 

@@ -1,13 +1,13 @@
-import { UserByEmailRequestModel } from "../requests/user/UserByEmailRequestModel";
-import { UserByIdRequestModel } from "../requests/user/UserByIdRequestModel";
-import { UserByUsernameRequestModel } from "../requests/user/UserByUsernameRequestModel";
-import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse";
-import { UserErrorResponses } from "../responses/messages/errors/user/userErrorResponse";
+import { UserByEmailRequestModel } from "../requests/user/UserByEmailRequestModel.js";
+import { UserByIdRequestModel } from "../requests/user/UserByIdRequestModel.js";
+import { UserByUsernameRequestModel } from "../requests/user/UserByUsernameRequestModel.js";
+import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
+import { UserErrorResponses } from "../responses/messages/errors/user/userErrorResponse.js";
 import { 
     getUserByEmailValidationScheme, 
     getUserByIdValidationScheme, 
     getUserByUsernameValidationScheme
-} from "./schemes/userValidationSchemes";
+} from "./schemes/userValidationSchemes.js";
 
 const getUserByIdValidator = (req, res, next) => {
     try {

@@ -3,6 +3,8 @@ import {
     getProjectByNameQuery, 
     getProjectsOfCommunityQuery,
     getProjectsOfCommunityPaginatedQuery,
+    getProjectByIdQuery,
+    updateProjectQuery,
 } from "../database/queries/project/projectQueries.js";
 import { getCommunityByIdQuery, addProjectToCommunityQuery } from "../database/queries/community/communityQueries.js";
 import pkg from "lodash";
@@ -61,6 +63,32 @@ const createProjectHandler = async (req, res, next) => {
     }
 };
 
+const updateProjectHandler = async (req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const project = await getProjectByIdQuery(requestModel.id);
+        if (isEmpty(project)) {
+            return res.status(ProjectErrorResponses.PROJECT_NOT_FOUND.code)
+              .json(prepareErrorResponse(ProjectErrorResponses.PROJECT_NOT_FOUND, null));
+        } else {
+            const userId = req.user.id;
+            if(!project.organizerIds.includes(userId)) {
+                return res.status(CommonErrorResponses.UNAUTHORIZED.code)
+                  .json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));                
+            } else {
+                const { id, ...updateModel } = requestModel;
+                const updatedProject = await updateProjectQuery(id, updateModel);
+                req.project = updatedProject;
+                next();
+            }
+        }
+    } catch(error) {
+        prepareErrorLog(error, updateProjectHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));        
+    }
+};
+
 const getProjectsOfCommunityHandler = async (req, res, next) => {
     try {
         const requestModel = req.requestModel;
@@ -104,6 +132,7 @@ const getProjectsOfCommunityPaginatedHandler = async (req, res, next) => {
 
 export {
     createProjectHandler,
+    updateProjectHandler,
     getProjectsOfCommunityHandler,
     getProjectsOfCommunityPaginatedHandler
 }

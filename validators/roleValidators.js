@@ -5,8 +5,8 @@ import {
   assignUserToRoleValidationScheme, 
   removeUserFromRoleValidationScheme
 } from "./schemes/roleValidationSchemes.js";
-import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse";
-import { RoleErrorResponses } from "../responses/messages/errors/role/roleErrorResponse";
+import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
+import { RoleErrorResponses } from "../responses/messages/errors/role/roleErrorResponse.js";
 import { RemoveUserFromRoleRequestModel } from "../requests/role/RemoveUserFromRoleRequestModel.js";
 
 const roleByIdValidator = (req, res, next) => {

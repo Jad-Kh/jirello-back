@@ -7,6 +7,10 @@ const ProjectSuccessResponses = {
     PROJECTS_OF_COMMUNITY_SUCCESS: {
         message: 'Projects successfully fetched!',
         code: 200
+    },
+    UPDATE_PROJECT_SUCCESS: {
+        message: 'Project successfully updated!',
+        code: 200
     }
 }
 
