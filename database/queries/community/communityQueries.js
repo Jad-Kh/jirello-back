@@ -61,6 +61,14 @@ const removeProjectFromCommunityQuery = async (communityId, projectId) => {
     );
 };
 
+const updateCommunityPermissionsQuery = async (id, permissions) => {
+    return await CommunityModel.findByIdAndUpdate(
+        id,
+        { permissions: permissions },
+        { new: true }
+    );
+};
+
 export {
     createCommunityQuery,
     getCommunityByIdQuery,
@@ -70,5 +78,6 @@ export {
     addUserToCommunityQuery,
     removeUserFromCommunityQuery,
     addProjectToCommunityQuery,
-    removeProjectFromCommunityQuery
+    removeProjectFromCommunityQuery,
+    updateCommunityPermissionsQuery
 }

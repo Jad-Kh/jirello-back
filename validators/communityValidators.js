@@ -6,6 +6,7 @@ import {
   communityByIdValidationScheme, 
   createCommunityValidationScheme, 
   removeUserFromCommunityValidationScheme, 
+  updateCommunityPermissionsValidationScheme, 
   updateCommunityValidationScheme 
 } from "./schemes/communityValidationSchemes.js";
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
@@ -17,6 +18,7 @@ import { AddUserToCommunityRequestModel } from "../requests/community/AddUserToC
 import { RemoveUserFromCommunityRequestModel } from "../requests/community/RemoveUserFromCommunityRequestModel.js";
 import { AddProjectToCommunityRequestModel } from "../requests/community/AddProjectToCommunityRequestModel.js";
 import { RemoveProjectFromCommunityRequestModel } from "../requests/community/RemoveProjectFromCommunityRequestModel.js";
+import { UpdateCommunityPermissionsRequestModel } from "../requests/community/UpdateCommunityPermissionsRequestModel.js";
 
 const communityByIdValidator = (req, res, next) => {
   try {
@@ -144,6 +146,24 @@ const removeProjectFromCommunityValidator = (req, res, next) => {
   }
 };
 
+const updateCommunityPermissionsValidator = (req, res, next) => {
+  try {
+    const bodyReceived = new UpdateCommunityPermissionsRequestModel(req.body);
+    const result = updateCommunityPermissionsValidationScheme.validate(bodyReceived);
+    if (result.error) {
+      return res.status(CommonErrorResponses.REQUIRED.code)
+        .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    } else {
+      req.requestModel = bodyReceived;
+      next();
+    }
+  } catch (error) {
+    prepareErrorLog(error, updateCommunityPermissionsValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+      .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));     
+  }
+};
+
 export {
     communityByIdValidator,
     createCommunityValidator,
@@ -151,5 +171,6 @@ export {
     addUserToCommunityValidator,
     removeUserFromCommunityValidator,
     addProjectToCommunityValidator,
-    removeProjectFromCommunityValidator
+    removeProjectFromCommunityValidator,
+    updateCommunityPermissionsValidator
 }

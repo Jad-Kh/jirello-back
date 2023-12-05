@@ -7,6 +7,7 @@ import {
     createCommunityValidator, 
     removeProjectFromCommunityValidator, 
     removeUserFromCommunityValidator, 
+    updateCommunityPermissionsValidator, 
     updateCommunityValidator 
 } from '../validators/communityValidators.js';
 import { 
@@ -15,7 +16,8 @@ import {
     createCommunityHandler, 
     removeProjectFromCommunityHandler, 
     removeUserFromCommunityHandler, 
-    updateCommunityHandler 
+    updateCommunityHandler, 
+    updateCommunityPermissionsHandler
 } from '../handlers/communityHandler.js';
 import { 
     addProjectToCommunityPresenter,
@@ -23,6 +25,7 @@ import {
     createCommunityPresenter, 
     removeProjectFromCommunityPresenter, 
     removeUserFromCommunityPresenter, 
+    updateCommunityPermissionsPresenter, 
     updateCommunityPresenter 
 } from '../presenters/communityPresenter.js';
 import { communityController } from '../controllers/communityController.js';
@@ -79,6 +82,15 @@ communityRoutes.put(
     removeProjectFromCommunityValidator,
     removeProjectFromCommunityHandler,
     removeProjectFromCommunityPresenter,
+    communityController,
+);
+
+communityRoutes.put(
+    "/update-community-permissions",
+    tokenSecurity,
+    updateCommunityPermissionsValidator,
+    updateCommunityPermissionsHandler,
+    updateCommunityPermissionsPresenter,
     communityController,
 );
 

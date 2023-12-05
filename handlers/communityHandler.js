@@ -7,7 +7,8 @@ import {
     addUserToCommunityQuery,
     removeUserFromCommunityQuery,
     addProjectToCommunityQuery,
-    removeProjectFromCommunityQuery
+    removeProjectFromCommunityQuery,
+    updateCommunityPermissionsQuery
 } from "../database/queries/community/communityQueries.js";
 import { getProjectByIdQuery, updateProjectCommunityQuery } from "../database/queries/project/projectQueries.js";
 import { addCommunityToUserOwnedQuery, addCommunityToUserQuery, getUserByIdQuery, removeCommunityFromUserQuery } from "../database/queries/user/userQueries.js";
@@ -208,11 +209,32 @@ const removeProjectFromCommunityHandler = async (req, res, next) => {
     }
 };
 
+const updateCommunityPermissionsHandler = async (req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const community = await getCommunityByIdQuery(requestModel.id);
+        if (isEmpty(community)) {
+            return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
+              .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));
+        } else {
+            const { id, ...permissions } = requestModel;
+            const updatedCommunity = await updateCommunityPermissionsQuery(id, permissions);
+            req.community = updatedCommunity;
+            next();
+        }
+    } catch(error) {
+        prepareErrorLog(error, updateCommunityPermissionsHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));          
+    }
+};
+
 export {
     createCommunityHandler,
     updateCommunityHandler,
     addUserToCommunityHandler,
     removeUserFromCommunityHandler,
     addProjectToCommunityHandler,
-    removeProjectFromCommunityHandler
+    removeProjectFromCommunityHandler,
+    updateCommunityPermissionsHandler
 }

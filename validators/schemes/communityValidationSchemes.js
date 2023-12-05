@@ -52,6 +52,16 @@ const removeProjectFromCommunityValidationScheme = Joi.object().keys({
     projectId: Joi.string().required().alphanum(),
 });
 
+const updateCommunityPermissionsValidationScheme = Joi.object().keys({
+    id: Joi.string().required().alphanum(),
+    tasks: Joi.array().required(),
+    taskGroups: Joi.array().required(),
+    meetings: Joi.array().required(),
+    projects: Joi.array().required(),
+    screens: Joi.array().required(),
+    roles: Joi.array().required(), 
+});
+
 export {
     communityByIdValidationScheme,
     createCommunityValidationScheme,
@@ -59,5 +69,6 @@ export {
     addUserToCommunityValidationScheme,
     removeUserFromCommunityValidationScheme,
     addProjectToCommunityValidationScheme,
-    removeProjectFromCommunityValidationScheme
+    removeProjectFromCommunityValidationScheme,
+    updateCommunityPermissionsValidationScheme
 }
