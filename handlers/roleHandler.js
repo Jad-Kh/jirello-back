@@ -1,11 +1,16 @@
+import { getCommunityByIdQuery } from "../database/queries/community/communityQueries.js";
 import {
     addUserToRoleQuery,
     getRoleByIdQuery,
+    getRolesOfCommunityPaginatedQuery,
+    getRolesOfCommunityQuery,
     removeUserFromRoleQuery
 } from "../database/queries/role/roleQueries.js";
 import { assignRoleToUserQuery } from "../database/queries/user/userQueries.js";
 import { RoleErrorResponses } from "../responses/messages/errors/role/roleErrorResponse.js";
 import { UserErrorResponses } from "../responses/messages/errors/user/userErrorResponse.js";
+import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
+import { CommunityErrorResponses } from "../responses/messages/errors/community/communityErrorResponse.js";
 import pkg from "lodash";
 
 const { isEmpty } = pkg;
@@ -70,7 +75,48 @@ const removeUserFromRoleHandler = async (req, res, next) => {
     }
 };
 
+const getCommunityRolesHandler = async(req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const community = await getCommunityByIdQuery(requestModel.communityId);
+        if (isEmpty(community)) {
+            return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
+              .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));
+        } else {
+            const roles = await getRolesOfCommunityQuery(requestModel.communityId);
+            req.roles = roles;
+            next();
+        }
+    } catch(error) {
+        prepareErrorLog(error, getCommunityRolesHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    }
+};
+
+const getCommunityRolesPaginatedHandler = async(req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const community = await getCommunityByIdQuery(requestModel.communityId);
+        if (isEmpty(community)) {
+            return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
+              .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));
+        } else {
+            const { skip, limit } = preparePagination(req.query);
+            const roles = await getRolesOfCommunityPaginatedQuery(requestModel.communityId, skip, limit);
+            req.roles = roles;
+            next();
+        }
+    } catch(error) {
+        prepareErrorLog(error, getCommunityRolesPaginatedHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    }
+};
+
 export {
     assignRoleToUserHandler,
-    removeUserFromRoleHandler
+    removeUserFromRoleHandler,
+    getCommunityRolesHandler,
+    getCommunityRolesPaginatedHandler
 }

@@ -16,6 +16,10 @@ const RoleSuccessResponses = {
         message: 'User successfully removed from role!',
         code: 200
     },
+    ROLES_OF_COMMUNITY_SUCCESS: {
+        message: 'Roles successfully fetched!',
+        code: 200
+    }
 }
 
 export {

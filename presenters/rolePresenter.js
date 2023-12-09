@@ -1,4 +1,5 @@
 import { RoleSuccessResponses } from "../responses/messages/success/role/roleSuccessResponses.js";
+import { RolesOfCommunityResponseModel } from "../responses/models/role/RolesOfCommunityResponseModel.js";
 
 const assignRoleToUserPresenter = async (req, res, next) => {
     req.statusCode = RoleSuccessResponses.ASSIGN_USER_TO_ROLE_SUCCESS.code;
@@ -20,7 +21,19 @@ const removeUserFromRolePresenter = async (req, res, next) => {
     next();
 };
 
+const getCommunityRolesPresenter = async (req, res, next) => {
+    const responseModel = new RolesOfCommunityResponseModel(req.community);
+    req.statusCode = RoleSuccessResponses.ROLES_OF_COMMUNITY_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        RoleSuccessResponses.ROLES_OF_COMMUNITY_SUCCESS,
+        null,
+        responseModel
+    );
+    next();
+};
+
 export {
     assignRoleToUserPresenter,
-    removeUserFromRolePresenter
+    removeUserFromRolePresenter,
+    getCommunityRolesPresenter
 }

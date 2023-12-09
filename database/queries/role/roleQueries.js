@@ -1,4 +1,5 @@
-import { RoleModel } from "../../models/role/role.js"
+import { RoleModel } from "../../models/role/role.js";
+import { CommunityModel } from "../../models/community/community.js";
 
 const createRoleQuery = async (body) => {
     return await RoleModel(body).save();
@@ -25,9 +26,30 @@ const removeUserFromRoleQuery = async (roleId, userId) => {
     );
 };
 
+const getRolesOfCommunityQuery = async (communityId) => {
+    const community = await CommunityModel.findById(communityId).select("roleIds");
+    const roleIds = community.projectIds;
+    const roles = await RoleModel.find({ 
+        _id: { $in: roleIds } 
+    });
+    return roles;    
+};
+
+const getRolesOfCommunityPaginatedQuery = async (communityId, skip, limit) => {
+    const community = await CommunityModel.findById(communityId).select("roleIds");
+    const roleIds = community.projectIds;
+    const roles = await RoleModel.find({ 
+        _id: { $in: roleIds } 
+    }).skip(skip)
+    .limit(limit);
+    return roles;    
+};
+
 export {
     createRoleQuery,
     getRoleByIdQuery,
     addUserToRoleQuery,
-    removeUserFromRoleQuery
+    removeUserFromRoleQuery,
+    getRolesOfCommunityQuery,
+    getRolesOfCommunityPaginatedQuery
 }
