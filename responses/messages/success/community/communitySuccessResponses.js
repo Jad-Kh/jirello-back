@@ -23,6 +23,10 @@ const CommunitySuccessResponses = {
     REMOVE_PROJECT_FROM_COMMUNITY_SUCCESS: {
         message: 'Project successfully removed from community!',
         code: 200
+    },
+    COMMUNITIES_OF_USER_SUCCESS: {
+        message: 'Communities successfully fetched!',
+        code: 200
     }
 };
 

@@ -1,4 +1,5 @@
 import { CommunityModel } from "../../models/community/community.js"
+import { UserModel } from "../../models/user/user.js";
 
 const createCommunityQuery = async (body) => {
     return await CommunityModel(body).save();
@@ -69,6 +70,26 @@ const updateCommunityPermissionsQuery = async (id, permissions) => {
     );
 };
 
+const getCommunitiesOfUserQuery = async (userId) => {
+    const user = await UserModel.findById(userId).select("communityIds ownedCommunityIds");
+    const communityIds = [...user.communityIds, ...user.ownedCommunityIds];
+    const communities = await CommunityModel.find({ 
+        _id: { $in: communityIds } 
+    });
+    return communities;    
+};
+
+const getCommunitiesOfUserPaginatedQuery = async (userId, skip, limit) => {
+    const user = await UserModel.findById(userId).select("communityIds ownedCommunityIds");
+    const communityIds = [...user.communityIds, ...user.ownedCommunityIds];
+    const communities = await CommunityModel.find({ 
+        _id: { $in: communityIds } 
+    })
+    .skip(skip)
+    .limit(limit);
+    return communities;    
+};
+
 export {
     createCommunityQuery,
     getCommunityByIdQuery,
@@ -79,5 +100,7 @@ export {
     removeUserFromCommunityQuery,
     addProjectToCommunityQuery,
     removeProjectFromCommunityQuery,
-    updateCommunityPermissionsQuery
+    updateCommunityPermissionsQuery,
+    getCommunitiesOfUserQuery,
+    getCommunitiesOfUserPaginatedQuery
 }

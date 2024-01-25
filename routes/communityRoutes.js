@@ -10,26 +10,30 @@ import {
     updateCommunityPermissionsValidator, 
     updateCommunityValidator 
 } from '../validators/communityValidators.js';
-import { 
+import {
     addProjectToCommunityHandler,
-    addUserToCommunityHandler, 
-    createCommunityHandler, 
-    removeProjectFromCommunityHandler, 
-    removeUserFromCommunityHandler, 
-    updateCommunityHandler, 
+    addUserToCommunityHandler,
+    createCommunityHandler,
+    getUserCommunitiesHandler,
+    getUserCommunitiesPaginatedHandler,
+    removeProjectFromCommunityHandler,
+    removeUserFromCommunityHandler,
+    updateCommunityHandler,
     updateCommunityPermissionsHandler
 } from '../handlers/communityHandler.js';
-import { 
+import {
     addProjectToCommunityPresenter,
-    addUserToCommunityPresenter, 
-    createCommunityPresenter, 
-    removeProjectFromCommunityPresenter, 
-    removeUserFromCommunityPresenter, 
-    updateCommunityPermissionsPresenter, 
-    updateCommunityPresenter 
+    addUserToCommunityPresenter,
+    createCommunityPresenter,
+    getUserCommunitiesPresenter,
+    removeProjectFromCommunityPresenter,
+    removeUserFromCommunityPresenter,
+    updateCommunityPermissionsPresenter,
+    updateCommunityPresenter
 } from '../presenters/communityPresenter.js';
 import { communityController } from '../controllers/communityController.js';
 import { tokenSecurity } from '../security/tokenSecurity.js';
+import { getUserByIdValidator } from "../validators/userValidators.js";
 
 communityRoutes.post(
     "/create-community",
@@ -92,6 +96,33 @@ communityRoutes.put(
     updateCommunityPermissionsHandler,
     updateCommunityPermissionsPresenter,
     communityController,
+);
+
+communityRoutes.put(
+    "/get-user-communities/:id",
+    tokenSecurity,
+    getUserByIdValidator,
+    getUserCommunitiesHandler,
+    getUserCommunitiesPresenter,
+    communityController
+);
+
+communityRoutes.put(
+    "/get-user-communities/:id",
+    tokenSecurity,
+    getUserByIdValidator,
+    getUserCommunitiesHandler,
+    getUserCommunitiesPresenter,
+    communityController
+);
+
+communityRoutes.put(
+    "/get-user-communities-paginated/:id",
+    tokenSecurity,
+    getUserByIdValidator,
+    getUserCommunitiesPaginatedHandler,
+    getUserCommunitiesPresenter,
+    communityController
 );
 
 export {

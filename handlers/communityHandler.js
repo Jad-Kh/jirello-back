@@ -8,7 +8,9 @@ import {
     removeUserFromCommunityQuery,
     addProjectToCommunityQuery,
     removeProjectFromCommunityQuery,
-    updateCommunityPermissionsQuery
+    updateCommunityPermissionsQuery,
+    getCommunitiesOfUserQuery,
+    getCommunitiesOfUserPaginatedQuery
 } from "../database/queries/community/communityQueries.js";
 import { getProjectByIdQuery, updateProjectCommunityQuery } from "../database/queries/project/projectQueries.js";
 import { addCommunityToUserOwnedQuery, addCommunityToUserQuery, getUserByIdQuery, removeCommunityFromUserQuery } from "../database/queries/user/userQueries.js";
@@ -20,6 +22,7 @@ import { prepareErrorLog } from "../errorLog/errorLog.js";
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
 import { ProjectErrorResponses } from "../responses/messages/errors/project/projectErrorResponses.js";
+import { preparePagination } from "../helpers/pagination.js";
 
 const { isEmpty } = pkg;
     
@@ -229,6 +232,43 @@ const updateCommunityPermissionsHandler = async (req, res, next) => {
     }
 };
 
+const getUserCommunitiesHandler = async (req, res, next) => {
+    try {
+        const userId = req.requestModel.id;
+        const user = await getUserByIdQuery(userId);
+        if (isEmpty(user)) {
+            return res.status(UserErrorResponses.USER_NOT_FOUND.code)
+              .json(prepareErrorResponse(UserErrorResponses.USER_NOT_FOUND, null));
+        }
+        const communities = await getCommunitiesOfUserQuery(userId);
+        req.communities = communities;
+        next();
+    } catch(error) {
+        prepareErrorLog(error, getUserCommunitiesHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+          .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    }
+};
+
+const getUserCommunitiesPaginatedHandler = async (req, res, next) => {
+    try {
+        const userId = req.requestModel.id;
+        const user = await getUserByIdQuery(userId);
+        if (isEmpty(user)) {
+            return res.status(UserErrorResponses.USER_NOT_FOUND.code)
+              .json(prepareErrorResponse(UserErrorResponses.USER_NOT_FOUND, null));
+        }
+        const { skip, limit } = preparePagination(req.query);
+        const communities = await getCommunitiesOfUserPaginatedQuery(userId, skip, limit);
+        req.communities = communities;
+        next();
+    } catch(error) {
+        prepareErrorLog(error, getUserCommunitiesPaginatedHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+          .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    }
+};
+
 export {
     createCommunityHandler,
     updateCommunityHandler,
@@ -236,5 +276,7 @@ export {
     removeUserFromCommunityHandler,
     addProjectToCommunityHandler,
     removeProjectFromCommunityHandler,
-    updateCommunityPermissionsHandler
+    updateCommunityPermissionsHandler,
+    getUserCommunitiesHandler,
+    getUserCommunitiesPaginatedHandler
 }

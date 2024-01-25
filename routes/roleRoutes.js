@@ -2,7 +2,7 @@ import express from 'express'
 const roleRoutes = express.Router();
 
 import { assignRoleToUserValidator, removeUserFromRoleValidator } from '../validators/roleValidators.js';
-import { assignRoleToUserHandler, getCommunityRolesHandler, removeUserFromRoleHandler } from '../handlers/roleHandler.js';
+import { assignRoleToUserHandler, getCommunityRolesHandler, getCommunityRolesPaginatedHandler, removeUserFromRoleHandler } from '../handlers/roleHandler.js';
 import { assignRoleToUserPresenter, getCommunityRolesPresenter, removeUserFromRolePresenter } from '../presenters/rolePresenter.js';
 import { roleController } from '../controllers/roleController.js';
 import { tokenSecurity } from '../security/tokenSecurity.js';
@@ -27,13 +27,22 @@ roleRoutes.put(
 );
 
 roleRoutes.get(
-    "/get-community-roles",
+    "/get-community-roles/:id",
     tokenSecurity,
     communityByIdValidator,
     getCommunityRolesHandler,
     getCommunityRolesPresenter,
     roleController,
-)
+);
+
+roleRoutes.get(
+    "/get-community-roles-paginated/:id",
+    tokenSecurity,
+    communityByIdValidator,
+    getCommunityRolesPaginatedHandler,
+    getCommunityRolesPresenter,
+    roleController,
+);
 
 export {
     roleRoutes

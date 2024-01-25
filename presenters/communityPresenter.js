@@ -1,6 +1,7 @@
 import { CommunityResponseModel } from "../responses/models/community/CommunityResponseModel.js";
 import { CommunitySuccessResponses } from "../responses/messages/success/community/communitySuccessResponses.js";
 import { prepareSuccessResponse } from "./common/successResponsePresenter.js";
+import {CommunitiesOfUserResponseModel} from "../responses/models/community/utils/CommunitiesOfUserResponseModel.js";
 
 const createCommunityPresenter = async (req, res, next) => {
     const responseModel = new CommunityResponseModel(req.community);
@@ -75,6 +76,17 @@ const updateCommunityPermissionsPresenter = async (req, res, next) => {
     next();
 };
 
+const getUserCommunitiesPresenter = async (req, res, next) => {
+    const responseModel = new CommunitiesOfUserResponseModel(req.communities);
+    res.statusCode = CommunitySuccessResponses.COMMUNITIES_OF_USER_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        CommunitySuccessResponses.COMMUNITIES_OF_USER_SUCCESS,
+        null,
+        responseModel
+    );
+    next();
+};
+
 export {
     createCommunityPresenter,
     updateCommunityPresenter,
@@ -82,5 +94,6 @@ export {
     removeUserFromCommunityPresenter,
     addProjectToCommunityPresenter,
     removeProjectFromCommunityPresenter,
-    updateCommunityPermissionsPresenter
+    updateCommunityPermissionsPresenter,
+    getUserCommunitiesPresenter
 };
