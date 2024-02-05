@@ -1,10 +1,25 @@
 import express from 'express'
 const authRoutes = express.Router();
 
-import { signUpValidator, logInValidator, recoveryValidator } from '../validators/authValidators.js';
-import { signUpHandler, logInHandler, recoveryHandler} from '../handlers/authHandler.js';
+import {
+    signUpValidator,
+    logInValidator,
+    recoveryValidator,
+    refreshTokenValidator, logoutValidator
+} from '../validators/authValidators.js';
+import {
+    signUpHandler,
+    logInHandler,
+    recoveryHandler,
+    refreshTokenHandler, logoutHandler
+} from '../handlers/authHandler.js';
 import { signUpSecurity, logInSecurity } from '../security/authSecurity.js';
-import { signUpPresenter, logInPresenter, recoveryPresenter } from '../presenters/authPresenter.js';
+import {
+    signUpPresenter,
+    logInPresenter,
+    recoveryPresenter,
+    refreshTokenPresenter, logoutPresenter
+} from '../presenters/authPresenter.js';
 import { authController } from '../controllers/authController.js';
 
 authRoutes.post(
@@ -31,7 +46,23 @@ authRoutes.get(
     recoveryHandler,
     recoveryPresenter,
     authController,
-)
+);
+
+authRoutes.post(
+    "/refresh-token",
+    refreshTokenValidator,
+    refreshTokenHandler,
+    refreshTokenPresenter,
+    authController,
+);
+
+authRoutes.post(
+    "/log-out",
+    logoutValidator,
+    logoutHandler,
+    logoutPresenter,
+    authController,
+);
 
 export {
     authRoutes

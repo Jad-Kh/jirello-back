@@ -11,21 +11,22 @@ const prepareJWTPayload = (user) => {
     };
 };
 
+const prepareJWTData = (user) => {
+    const jwtSecret = process.env.JWT_SECRET;
+    return { user: prepareJWTPayload(user), secret: jwtSecret };
+}
+
 const generateJWT = (user) => {
-    const JWT_SECRET = process.env.JWT_SECRET;
-    const jwtData = prepareJWTPayload(user);
-    const jsonToken = jwt.sign(jwtData, JWT_SECRET);
-    return jsonToken;
+    const jwtData = prepareJWTData(user);
+    return jwt.sign(jwtData.user, jwtData.secret);
 };
 
-const jwtUserEncryption = (user) => {
-    const JWT_SECRET = process.env.JWT_SECRET;
-    const payload = { user };
-    const token = jwt.sign(payload, JWT_SECRET);
-    return token;
-};
+const generateJWTWithExpiration = (user) => {
+    const jwtData = prepareJWTData(user);
+    return jwt.sign(jwtData.user, jwtData.secret, { expiresIn: '10m' });
+}
 
 export {
     generateJWT,
-    jwtUserEncryption,
+    generateJWTWithExpiration
 };

@@ -24,8 +24,18 @@ const recoveryValidationScheme = Joi.object().keys({
     email: Joi.string().custom(emailValidation),
 });
 
+const refreshTokenValidationScheme = Joi.object().keys({
+    id: Joi.string().alphanum().required()
+});
+
+const logoutValidationScheme = Joi.object().keys({
+    id: Joi.string().alphanum().required()
+});
+
 export {
     signUpValidationScheme,
     logInValidationScheme,
-    recoveryValidationScheme
+    recoveryValidationScheme,
+    refreshTokenValidationScheme,
+    logoutValidationScheme
 }

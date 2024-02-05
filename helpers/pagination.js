@@ -1,12 +1,10 @@
 const preparePagination = (params) => {
     const page = parseInt(params.page);
     const limit = parseInt(params.limit);
-    const pageNumber = parseInt(page) || 1;
-    const pageSize = parseInt(limit) || 10;
+    const pageNumber = parseInt(page.toString()) || 1;
+    const pageSize = parseInt(limit.toString()) || 10;
     const skip = (pageNumber - 1) * pageSize;
-    const limitValue = pageSize;
-  
-    return { skip, limit: limitValue };
+    return { skip, limit: pageSize };
 };
 
 export {

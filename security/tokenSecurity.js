@@ -13,13 +13,20 @@ const tokenSecurity = async (req, res, next) => {
         } 
         const data = jwt.decode(token.replace("Bearer", "").trim(), process.env.JWT_SECRET);
         if(data) {
-            const user = await getUserByIdQuery(data.user.id);
+            const user = await getUserByIdQuery(data?.user.id);
             if(!user) {
                 return res.status(CommonErrorResponses.UNAUTHORIZED.code)
                     .json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));
             }
-            req.user = user;
-            next();
+            jwt.verify(token.replace("Bearer", "").trim(), process.env.JWT_SECRET, (error, user) => {
+                if(error) {
+                    return res.status(CommonErrorResponses.FORBIDDEN.code)
+                        .json(prepareErrorResponse(CommonErrorResponses.FORBIDDEN, null));
+                } else {
+                    req.user = user;
+                    next();
+                }
+            });
         } else {
             return res.status(CommonErrorResponses.UNAUTHORIZED.code)
                 .json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));

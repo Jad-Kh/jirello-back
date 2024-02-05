@@ -1,11 +1,12 @@
-import { generateJWT } from "../helpers/jwtkit.js";
+import { generateJWT, generateJWTWithExpiration } from "../helpers/jwtkit.js";
 import { prepareErrorLog } from "../errorLog/errorLog.js";
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
+import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
 
 const signUpSecurity = async (req, res, next) => {
     try {
         const user = req.user;
-        const registeredToken = await generateJWT(user);
+        const registeredToken = generateJWTWithExpiration(user);
         res.cookie("token", registeredToken);
         req.responseModel = { token: registeredToken, id: user._id };
         next();
@@ -19,7 +20,7 @@ const signUpSecurity = async (req, res, next) => {
 const logInSecurity = async (req, res, next) => {
     try {
         const user = req.user;
-        const registeredToken = await generateJWT(user);
+        const registeredToken = generateJWTWithExpiration(user);
         res.cookie("token", registeredToken);
         req.responseModel = { token: registeredToken, id: user._id };
         next();

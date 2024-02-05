@@ -1,9 +1,9 @@
 import { SignUpRequestModel } from "../requests/auth/SignUpRequestModel.js";
 import { LogInRequestModel } from "../requests/auth/LogInRequestModel.js";
-import { 
-  signUpValidationScheme, 
-  logInValidationScheme, 
-  recoveryValidationScheme 
+import {
+  signUpValidationScheme,
+  logInValidationScheme,
+  recoveryValidationScheme, refreshTokenValidationScheme, logoutValidationScheme
 } from "./schemes/authValidationSchemes.js";
 import { parseUsernameOrEmail } from "../helpers/logIn.js";
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
@@ -11,6 +11,9 @@ import { AuthErrorResponses } from "../responses/messages/errors/auth/authErrorR
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
 import { prepareErrorLog } from "../errorLog/errorLog.js"
 import { RecoveryRequestModel } from "../requests/auth/RecoveryRequestModel.js";
+import { RefreshTokenRequestModel } from "../requests/auth/RefreshTokenRequestModel.js";
+import { UserErrorResponses } from "../responses/messages/errors/user/userErrorResponse.js";
+import { LogoutRequestModel } from "../requests/auth/LogoutRequestModel.js";
 
 const signUpValidator = (req, res, next) => {
   try {
@@ -65,10 +68,48 @@ const recoveryValidator = (req, res, next) => {
     return res.status(CommonErrorResponses.SERVER_ERROR.code)
       .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
   }
-}
+};
+
+const refreshTokenValidator = (req, res, next) => {
+  try {
+    const bodyReceived = new RefreshTokenRequestModel(req.body);
+    const result = refreshTokenValidationScheme.validate(bodyReceived);
+    if(result.error) {
+      return res.status(UserErrorResponses.USER_NOT_FOUND.code)
+          .json(prepareErrorResponse(UserErrorResponses.USER_NOT_FOUND, result?.error?.message));
+    } else {
+      req.requestModel = bodyReceived;
+      next();
+    }
+  } catch (error) {
+    prepareErrorLog(error, refreshTokenValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+        .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+  }
+};
+
+const logoutValidator = (req, res, next) => {
+  try {
+    const bodyReceived = new LogoutRequestModel(req.body);
+    const result = logoutValidationScheme.validate(bodyReceived);
+    if(result.error) {
+      return res.status(UserErrorResponses.USER_NOT_FOUND.code)
+          .json(prepareErrorResponse(UserErrorResponses.USER_NOT_FOUND, result?.error?.message));
+    } else {
+      req.requestModel = bodyReceived;
+      next();
+    }
+  } catch (error) {
+    prepareErrorLog(error, logoutValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+        .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+  }
+};
 
 export {
   signUpValidator,
   logInValidator,
-  recoveryValidator
+  recoveryValidator,
+  refreshTokenValidator,
+  logoutValidator
 }

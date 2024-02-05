@@ -1,7 +1,7 @@
-import { 
-    getUserByEmailQuery, 
+import {
+    getUserByEmailQuery,
     getUserByUsernameQuery,
-    createUserQuery
+    createUserQuery, getUserAccessByIdQuery, updateUserAccessQuery, getUserByIdQuery, removeUserAccessQuery
 } from "../database/queries/user/userQueries.js";
 import pkg from "lodash";
 import bcrypt from "bcrypt";
@@ -10,6 +10,8 @@ import { prepareErrorResponse } from "../presenters/common/errorResponsePresente
 import { AuthErrorResponses } from "../responses/messages/errors/auth/authErrorResponses.js";
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
 import { CreateUserRequestModel } from "../requests/user/CreateUserRequestModel.js";
+import {generateJWT, generateJWTWithExpiration} from "../helpers/jwtkit.js";
+import {UserErrorResponses} from "../responses/messages/errors/user/userErrorResponse.js";
 
 const { isEmpty } = pkg;
 
@@ -33,10 +35,10 @@ const signUpHandler = async (req, res, next) => {
             const taskGroupIds = [];
             const taskPerWeekAverage = 0;
             const tasks = { taskIds, taskGroupIds, taskPerWeekAverage };
-            const mutedCommunitiyIds = [];
+            const mutedCommunityIds = [];
             const mutedChatIds = [];
             const muteAll = false;
-            const notifications = { mutedCommunitiyIds, mutedChatIds, muteAll };
+            const notifications = { mutedCommunityIds: mutedCommunityIds, mutedChatIds, muteAll };
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(requestModel.password, salt);
             requestModel.password = hashedPassword;
@@ -69,6 +71,8 @@ const logInHandler = async (req, res, next) => {
             return res.status(userError.code)
                 .json(prepareErrorResponse(userError, null));
         }
+        const refreshToken = generateJWT(user);
+        await updateUserAccessQuery(user.id, refreshToken);
         req.user = user;
         next();
     } catch(error) {
@@ -95,8 +99,52 @@ const recoveryHandler = async (req, res, next) => {
     }
 };
 
+const refreshTokenHandler = async (req, res, next) => {
+    try {
+        const userId = req.requestModel.id;
+        const access = await getUserAccessByIdQuery(userId);
+        if(isEmpty(access) || access?.refreshToken === '') {
+            return res.status(CommonErrorResponses.UNAUTHORIZED.code)
+                .json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));
+        } else {
+            const updatedToken = generateJWTWithExpiration({id: userId});
+            if(updatedToken) {
+                req.token = updatedToken;
+                next();
+            } else {
+                return res.status(CommonErrorResponses.SERVER_ERROR.code)
+                    .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+            }
+        }
+    } catch(error) {
+        prepareErrorLog(error, refreshTokenHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    }
+};
+
+const logoutHandler = async (req, res, next) => {
+    try {
+        const userId = req.requestModel.id;
+        const user = await getUserByIdQuery(userId);
+        if(isEmpty(user)) {
+            return res.status(UserErrorResponses.USER_NOT_FOUND.code)
+                .json(prepareErrorResponse(UserErrorResponses.USER_NOT_FOUND, null));
+        } else {
+            await removeUserAccessQuery(userId);
+            next();
+        }
+    } catch(error) {
+        prepareErrorLog(error, logoutHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    }
+};
+
 export {
     signUpHandler,
     logInHandler,
-    recoveryHandler
+    recoveryHandler,
+    refreshTokenHandler,
+    logoutHandler
 }

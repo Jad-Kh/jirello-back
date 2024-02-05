@@ -36,8 +36,30 @@ const recoveryPresenter = async (req, res, next) => {
     next();
 };
 
+const refreshTokenPresenter = async (req, res, next) => {
+    const responseModel = new AuthResponseModel(req.responseModel);
+    req.statusCode = AuthSuccessResponses.REFRESH_TOKEN_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        AuthSuccessResponses.REFRESH_TOKEN_SUCCESS,
+        null,
+        responseModel
+    );
+    next();
+}
+
+const logoutPresenter = async (req, res, next) => {
+    req.statusCode = AuthSuccessResponses.LOGOUT_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        AuthSuccessResponses.LOGOUT_SUCCESS,
+        null,
+    );
+    next();
+}
+
 export {
     signUpPresenter,
     logInPresenter,
-    recoveryPresenter
+    recoveryPresenter,
+    refreshTokenPresenter,
+    logoutPresenter
 }

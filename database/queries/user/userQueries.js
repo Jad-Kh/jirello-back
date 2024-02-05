@@ -98,6 +98,27 @@ const removeRoleFromUserQuery = async (userId, roleId) => {
     );
 };
 
+const getUserAccessByIdQuery = async (id) => {
+    const userAccess = await UserModel.findOne({
+        _id: id,
+    }).select("access");
+    return userAccess;
+};
+
+const updateUserAccessQuery = async(id, token) => {
+    return await UserModel.updateOne(
+        { _id: userId },
+        { $set: { 'access.refreshToken': token } }
+    );
+};
+
+const removeUserAccessQuery = async(id) => {
+    return await UserModel.updateOne(
+        { _id: userId },
+        { $set: { 'access.refreshToken': null } }
+    );
+};
+
 export {
     createUserQuery,
     getUserByIdQuery,
@@ -111,5 +132,8 @@ export {
     getUsersByRoleIdQuery,
     getUsersByRoleIdPaginatedQuery,
     assignRoleToUserQuery,
-    removeRoleFromUserQuery
+    removeRoleFromUserQuery,
+    getUserAccessByIdQuery,
+    updateUserAccessQuery,
+    removeUserAccessQuery
 }

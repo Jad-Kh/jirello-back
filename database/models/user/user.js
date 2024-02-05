@@ -6,6 +6,7 @@ import { UserProfile } from "./userProfile/userProfile.js";
 import { UserTasks } from "./userTasks/userTasks.js";
 import { UserNotifications } from "./userNotifications/userNotifications.js";
 import { UserRoles } from "./userRoles/userRoles.js";
+import { UserAccess } from "./userAccess/userAccess.js";
 
 const UserModelSchema = new mongoose.Schema(
     {
@@ -41,6 +42,9 @@ const UserModelSchema = new mongoose.Schema(
             default: [],
             required: true,
         },
+        access: {
+            type: UserAccess
+        }
     },
     {
         timestamps: true,

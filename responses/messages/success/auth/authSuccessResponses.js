@@ -11,6 +11,14 @@ const AuthSuccessResponses = {
     RECOVERY_SUCCESS: {
         message: 'Email successfully fetched',
         code: 200
+    },
+    REFRESH_TOKEN_SUCCESS: {
+        message: 'Token successfully refreshed!',
+        code: 200
+    },
+    LOGOUT_SUCCESS: {
+        message: 'User successfully logged out',
+        code: 200
     }
 }
 
