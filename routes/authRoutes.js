@@ -5,20 +5,23 @@ import {
     signUpValidator,
     logInValidator,
     recoveryValidator,
-    refreshTokenValidator, logoutValidator
+    refreshTokenValidator,
+    logoutValidator
 } from '../validators/authValidators.js';
 import {
     signUpHandler,
     logInHandler,
     recoveryHandler,
-    refreshTokenHandler, logoutHandler
+    refreshTokenHandler,
+    logoutHandler
 } from '../handlers/authHandler.js';
 import { signUpSecurity, logInSecurity } from '../security/authSecurity.js';
 import {
     signUpPresenter,
     logInPresenter,
     recoveryPresenter,
-    refreshTokenPresenter, logoutPresenter
+    refreshTokenPresenter,
+    logoutPresenter
 } from '../presenters/authPresenter.js';
 import { authController } from '../controllers/authController.js';
 

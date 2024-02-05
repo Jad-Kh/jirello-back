@@ -18,7 +18,7 @@ const AuthSuccessResponses = {
     },
     LOGOUT_SUCCESS: {
         message: 'User successfully logged out',
-        code: 200
+        code: 204
     }
 }
 
