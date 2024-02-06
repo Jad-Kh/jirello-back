@@ -45,7 +45,9 @@ const signUpHandler = async (req, res, next) => {
             const newUserBody = { isAdmin, communityIds, ownedCommunityIds, profile: requestModel, tasks, notifications };
             const newUser = new CreateUserRequestModel(newUserBody);
             const savedUser = await createUserQuery(newUser);
-            req.user = savedUser;
+            const refreshToken = generateJWT(savedUser);
+            const accessToken = generateJWTWithExpiration(savedUser);
+            req.user = { savedUser, refreshToken, accessToken };
             next();
         }
     } catch(error) {
@@ -73,7 +75,8 @@ const logInHandler = async (req, res, next) => {
         }
         const refreshToken = generateJWT(user);
         await updateUserAccessQuery(user.id, refreshToken);
-        req.user = user;
+        const accessToken = generateJWTWithExpiration(user);
+        req.user = { user, refreshToken, accessToken };
         next();
     } catch(error) {
         prepareErrorLog(error, logInHandler.name);

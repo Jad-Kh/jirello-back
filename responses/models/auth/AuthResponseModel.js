@@ -1,14 +1,12 @@
 class AuthResponseModel {
-  token = undefined;
+  refreshToken = undefined;
+  accessToken = undefined;
   id = undefined;
 
   constructor(values) {
-    this.token = values.token;
+    this.refreshToken = values.refreshToken;
+    this.accessToken = values.accessToken;
     this.id = values.id;
-  }
-
-  setToken(token) {
-    this.token = token;
   }
 }
 
