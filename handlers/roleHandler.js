@@ -6,12 +6,20 @@ import {
     getRolesOfCommunityQuery,
     removeUserFromRoleQuery
 } from "../database/queries/role/roleQueries.js";
-import { assignRoleToUserQuery } from "../database/queries/user/userQueries.js";
+import { prepareErrorLog } from "../errorLog/errorLog.js";
+import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
+import { preparePagination } from "../helpers/pagination.js";
+import {
+    assignRoleToUserQuery,
+    getUserByIdQuery,
+    removeRoleFromUserQuery
+} from "../database/queries/user/userQueries.js";
 import { RoleErrorResponses } from "../responses/messages/errors/role/roleErrorResponse.js";
 import { UserErrorResponses } from "../responses/messages/errors/user/userErrorResponse.js";
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
 import { CommunityErrorResponses } from "../responses/messages/errors/community/communityErrorResponse.js";
 import pkg from "lodash";
+import {prepareNesting} from "../helpers/nesting.js";
 
 const { isEmpty } = pkg;
 
@@ -114,9 +122,30 @@ const getCommunityRolesPaginatedHandler = async(req, res, next) => {
     }
 };
 
+const getCommunityRoleHierarchyHandler = async(req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const community = await getCommunityByIdQuery(requestModel.communityId);
+        if (isEmpty(community)) {
+            return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
+                .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));
+        } else {
+            const roles = await getRolesOfCommunityQuery(requestModel.communityId);
+            const nestedRoles = await prepareNesting(roles);
+            req.roles = nestedRoles;
+            next();
+        }
+    } catch(error) {
+        prepareErrorLog(error, getCommunityRoleHierarchyHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    }
+};
+
 export {
     assignRoleToUserHandler,
     removeUserFromRoleHandler,
     getCommunityRolesHandler,
-    getCommunityRolesPaginatedHandler
+    getCommunityRolesPaginatedHandler,
+    getCommunityRoleHierarchyHandler
 }

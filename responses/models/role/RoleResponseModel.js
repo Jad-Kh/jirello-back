@@ -13,6 +13,7 @@ class RoleResponseModel extends APISignatureResponseModel {
     projectIds = undefined;
 
     constructor(values) {
+        super(values);
         this.title = values.title;
         this.userIds = values.userIds;
         this.communityId = values?.communityId;

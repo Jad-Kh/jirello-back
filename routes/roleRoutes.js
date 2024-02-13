@@ -2,8 +2,19 @@ import express from 'express'
 const roleRoutes = express.Router();
 
 import { assignRoleToUserValidator, removeUserFromRoleValidator } from '../validators/roleValidators.js';
-import { assignRoleToUserHandler, getCommunityRolesHandler, getCommunityRolesPaginatedHandler, removeUserFromRoleHandler } from '../handlers/roleHandler.js';
-import { assignRoleToUserPresenter, getCommunityRolesPresenter, removeUserFromRolePresenter } from '../presenters/rolePresenter.js';
+import {
+    assignRoleToUserHandler,
+    getCommunityRoleHierarchyHandler,
+    getCommunityRolesHandler,
+    getCommunityRolesPaginatedHandler,
+    removeUserFromRoleHandler
+} from '../handlers/roleHandler.js';
+import {
+    assignRoleToUserPresenter,
+    getCommunityRoleHierarchyPresenter,
+    getCommunityRolesPresenter,
+    removeUserFromRolePresenter
+} from '../presenters/rolePresenter.js';
 import { roleController } from '../controllers/roleController.js';
 import { tokenSecurity } from '../security/tokenSecurity.js';
 import { communityByIdValidator } from '../validators/communityValidators.js';
@@ -41,6 +52,15 @@ roleRoutes.get(
     communityByIdValidator,
     getCommunityRolesPaginatedHandler,
     getCommunityRolesPresenter,
+    roleController,
+);
+
+roleRoutes.get(
+    "/get-community-role-hierarchy/:id",
+    tokenSecurity,
+    communityByIdValidator,
+    getCommunityRoleHierarchyHandler,
+    getCommunityRoleHierarchyPresenter,
     roleController,
 );
 

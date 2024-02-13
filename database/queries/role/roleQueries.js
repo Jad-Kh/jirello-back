@@ -28,7 +28,7 @@ const removeUserFromRoleQuery = async (roleId, userId) => {
 
 const getRolesOfCommunityQuery = async (communityId) => {
     const community = await CommunityModel.findById(communityId).select("roleIds");
-    const roleIds = community.projectIds;
+    const roleIds = community.roleIds;
     const roles = await RoleModel.find({ 
         _id: { $in: roleIds } 
     });
@@ -37,7 +37,7 @@ const getRolesOfCommunityQuery = async (communityId) => {
 
 const getRolesOfCommunityPaginatedQuery = async (communityId, skip, limit) => {
     const community = await CommunityModel.findById(communityId).select("roleIds");
-    const roleIds = community.projectIds;
+    const roleIds = community.roleIds;
     const roles = await RoleModel.find({ 
         _id: { $in: roleIds } 
     }).skip(skip)

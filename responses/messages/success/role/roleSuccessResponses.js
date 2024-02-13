@@ -19,6 +19,10 @@ const RoleSuccessResponses = {
     ROLES_OF_COMMUNITY_SUCCESS: {
         message: 'Roles successfully fetched!',
         code: 200
+    },
+    ROLE_HIERARCHY_OF_COMMUNITY_SUCCESS: {
+        message: 'Role hierarchy successfully fetched!',
+        code: 200
     }
 }
 
