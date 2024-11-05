@@ -98,7 +98,7 @@ communityRoutes.put(
     communityController,
 );
 
-communityRoutes.put(
+communityRoutes.get(
     "/get-user-communities/:id",
     tokenSecurity,
     getUserByIdValidator,
@@ -107,16 +107,7 @@ communityRoutes.put(
     communityController
 );
 
-communityRoutes.put(
-    "/get-user-communities/:id",
-    tokenSecurity,
-    getUserByIdValidator,
-    getUserCommunitiesHandler,
-    getUserCommunitiesPresenter,
-    communityController
-);
-
-communityRoutes.put(
+communityRoutes.get(
     "/get-user-communities-paginated/:id",
     tokenSecurity,
     getUserByIdValidator,

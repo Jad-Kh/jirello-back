@@ -8,6 +8,8 @@ import {
     getUserByIdValidationScheme, 
     getUserByUsernameValidationScheme
 } from "./schemes/userValidationSchemes.js";
+import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
+import { prepareErrorLog } from "../errorLog/errorLog.js";
 
 const getUserByIdValidator = (req, res, next) => {
     try {
