@@ -1,6 +1,8 @@
+import { CreateRoleRequestModel } from "../requests/role/CreateRoleRequestModel.js";
 import { RoleByIdRequestModel } from "../requests/role/RoleByIdRequestModel.js";
 import { AssignUserToRoleRequestModel } from "../requests/role/AssignUserToRoleRequestModel.js";
-import { 
+import {
+  createRoleValidationScheme,
   roleByIdValidationScheme,
   assignUserToRoleValidationScheme, 
   removeUserFromRoleValidationScheme
@@ -8,6 +10,26 @@ import {
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
 import { RoleErrorResponses } from "../responses/messages/errors/role/roleErrorResponse.js";
 import { RemoveUserFromRoleRequestModel } from "../requests/role/RemoveUserFromRoleRequestModel.js";
+import { prepareErrorLog } from "../errorLog/errorLog.js";
+import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
+
+const createRoleValidator = (req, res, next) => {
+  try {
+    const bodyReceived = new CreateRoleRequestModel(req.body);
+    const result = createRoleValidationScheme.validate(bodyReceived);
+    if (result.error) {
+      return res.status(RoleErrorResponses.CREATION_ERROR.code)
+          .json(prepareErrorResponse(RoleErrorResponses.CREATION_ERROR, result?.error?.message));
+    } else {
+      req.requestModel = bodyReceived;
+      next();
+    }
+  } catch(error) {
+    prepareErrorLog(error, createRoleValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+        .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+  }
+};
 
 const roleByIdValidator = (req, res, next) => {
   try {
@@ -64,6 +86,7 @@ const removeUserFromRoleValidator = (req, res, next) => {
 };
 
 export {
+    createRoleValidator,
     roleByIdValidator,
     assignRoleToUserValidator,
     removeUserFromRoleValidator

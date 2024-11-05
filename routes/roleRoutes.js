@@ -1,9 +1,14 @@
 import express from 'express'
 const roleRoutes = express.Router();
 
-import { assignRoleToUserValidator, removeUserFromRoleValidator } from '../validators/roleValidators.js';
+import { 
+    assignRoleToUserValidator, 
+    createRoleValidator, 
+    removeUserFromRoleValidator 
+} from '../validators/roleValidators.js';
 import {
     assignRoleToUserHandler,
+    createRoleHandler,
     getCommunityRoleHierarchyHandler,
     getCommunityRolesHandler,
     getCommunityRolesPaginatedHandler,
@@ -11,6 +16,7 @@ import {
 } from '../handlers/roleHandler.js';
 import {
     assignRoleToUserPresenter,
+    createRolePresenter,
     getCommunityRoleHierarchyPresenter,
     getCommunityRolesPresenter,
     removeUserFromRolePresenter
@@ -18,6 +24,15 @@ import {
 import { roleController } from '../controllers/roleController.js';
 import { tokenSecurity } from '../security/tokenSecurity.js';
 import { communityByIdValidator } from '../validators/communityValidators.js';
+
+roleRoutes.post(
+    "/create-role",
+    tokenSecurity,
+    createRoleValidator,
+    createRoleHandler,
+    createRolePresenter,
+    roleController
+);
 
 roleRoutes.put(
     "/assign-role-to-user",

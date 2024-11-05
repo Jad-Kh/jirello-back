@@ -3,6 +3,16 @@ import { RolesOfCommunityResponseModel } from "../responses/models/role/RolesOfC
 import { RoleHierarchyResponseModel } from "../responses/models/role/RoleHierarchyResponseModel.js";
 import { prepareSuccessResponse } from "./common/successResponsePresenter.js";
 
+const createRolePresenter = async (req, res, next) => {
+    req.statusCode = RoleSuccessResponses.CREATE_ROLE_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        RoleSuccessResponses.CREATE_ROLE_SUCCESS,
+        null,
+        { }
+    );
+    next();
+};
+
 const assignRoleToUserPresenter = async (req, res, next) => {
     req.statusCode = RoleSuccessResponses.ASSIGN_USER_TO_ROLE_SUCCESS.code;
     req.presenterModel = prepareSuccessResponse(
@@ -46,6 +56,7 @@ const getCommunityRoleHierarchyPresenter = async (req, res, next) => {
 };
 
 export {
+    createRolePresenter,
     assignRoleToUserPresenter,
     removeUserFromRolePresenter,
     getCommunityRolesPresenter,

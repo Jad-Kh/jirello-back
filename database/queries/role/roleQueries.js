@@ -1,5 +1,6 @@
 import { RoleModel } from "../../models/role/role.js";
 import { CommunityModel } from "../../models/community/community.js";
+import {UserModel} from "../../models/user/user.js";
 
 const createRoleQuery = async (body) => {
     return await RoleModel(body).save();
@@ -8,6 +9,13 @@ const createRoleQuery = async (body) => {
 const getRoleByIdQuery = async (id) => {
     const role = await RoleModel.findOne({
         _id: id,
+    });
+    return role;
+};
+
+const getRoleByTitleQuery = async (title) => {
+    const role = await RoleModel.findOne({
+        "title": title,
     });
     return role;
 };
@@ -48,6 +56,7 @@ const getRolesOfCommunityPaginatedQuery = async (communityId, skip, limit) => {
 export {
     createRoleQuery,
     getRoleByIdQuery,
+    getRoleByTitleQuery,
     addUserToRoleQuery,
     removeUserFromRoleQuery,
     getRolesOfCommunityQuery,

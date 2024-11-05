@@ -18,7 +18,7 @@ const RoleModelSchema = new mongoose.Schema(
             required: true,
         },
         communityId: {
-            type: Number,
+            type: String,
             required: true,
         },
         permissionOverrides: {

@@ -2,6 +2,7 @@ import { getCommunityByIdQuery } from "../database/queries/community/communityQu
 import {
     addUserToRoleQuery,
     getRoleByIdQuery,
+    getRoleByTitleQuery,
     getRolesOfCommunityPaginatedQuery,
     getRolesOfCommunityQuery,
     removeUserFromRoleQuery
@@ -19,9 +20,28 @@ import { UserErrorResponses } from "../responses/messages/errors/user/userErrorR
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
 import { CommunityErrorResponses } from "../responses/messages/errors/community/communityErrorResponse.js";
 import pkg from "lodash";
-import {prepareNesting} from "../helpers/nesting.js";
+import { prepareNesting } from "../helpers/nesting.js";
 
 const { isEmpty } = pkg;
+
+const createRoleHandler = async (req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const roleByTitle = await getRoleByTitleQuery(requestModel.title);
+        if(roleByTitle && roleByTitle.communityId === requestModel.communityId) {
+            return res.status(RoleErrorResponses.ROLE_NAME_ALREADY_EXISTS.code)
+                .json(prepareErrorResponse(RoleErrorResponses.ROLE_NAME_ALREADY_EXISTS, null));
+        } else {
+            const title = requestModel.title;
+            const userIds = [];
+            
+        }
+    } catch(error) {
+        prepareErrorLog(error, assignRoleToUserHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    }
+};
 
 const assignRoleToUserHandler = async (req, res, next) => {
     try {
@@ -143,6 +163,7 @@ const getCommunityRoleHierarchyHandler = async(req, res, next) => {
 };
 
 export {
+    createRoleHandler,
     assignRoleToUserHandler,
     removeUserFromRoleHandler,
     getCommunityRolesHandler,
