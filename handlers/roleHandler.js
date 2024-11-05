@@ -1,5 +1,6 @@
 import { getCommunityByIdQuery } from "../database/queries/community/communityQueries.js";
 import {
+    createRoleQuery,
     addUserToRoleQuery,
     getRoleByIdQuery,
     getRoleByTitleQuery,
@@ -21,6 +22,9 @@ import { CommonErrorResponses } from "../responses/messages/errors/common/common
 import { CommunityErrorResponses } from "../responses/messages/errors/community/communityErrorResponse.js";
 import pkg from "lodash";
 import { prepareNesting } from "../helpers/nesting.js";
+import { CommunityPermissionsRequestModel } from "../requests/community/utils/CommunityPermissionsRequestModel.js";
+import { RoleRequestModel } from "../requests/role/RoleRequestModel.js"
+import { Permissions } from "../helpers/permissions.js";
 
 const { isEmpty } = pkg;
 
@@ -34,7 +38,38 @@ const createRoleHandler = async (req, res, next) => {
         } else {
             const title = requestModel.title;
             const userIds = [];
-            
+            const communityId = requestModel.communityId;
+            const overrideValues = {
+                title: Permissions.READ_OWN,
+                communityId: Permissions.READ_OWN,
+                parentRoleId: Permissions.READ_OWN,
+                priorityPosition: Permissions.READ_OWN,
+                projectBased: Permissions.READ_OWN
+            }
+            const permissionOverrides = new CommunityPermissionsRequestModel(overrideValues);
+            const permittedScreenIds = [];
+            const overrideAll = false;
+            const parentRoleId = requestModel.parentRoleId;
+            const priorityPosition = requestModel.priorityPosition;
+            const projectBased = requestModel.projectBased;
+            const projectIds = [];
+            const role = {
+                title,
+                userIds,
+                communityId,
+                overrideValues,
+                permissionOverrides,
+                permittedScreenIds,
+                overrideAll,
+                parentRoleId,
+                priorityPosition,
+                projectBased,
+                projectIds
+            }
+            const newRole = new RoleRequestModel(role);
+            const savedRole = await createRoleQuery(newRole);
+            req.role = savedRole;
+            next();
         }
     } catch(error) {
         prepareErrorLog(error, assignRoleToUserHandler.name);

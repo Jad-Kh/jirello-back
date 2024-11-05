@@ -2,13 +2,15 @@ import { RoleSuccessResponses } from "../responses/messages/success/role/roleSuc
 import { RolesOfCommunityResponseModel } from "../responses/models/role/RolesOfCommunityResponseModel.js";
 import { RoleHierarchyResponseModel } from "../responses/models/role/RoleHierarchyResponseModel.js";
 import { prepareSuccessResponse } from "./common/successResponsePresenter.js";
+import { RoleResponseModel } from "../responses/models/role/RoleResponseModel.js";
 
 const createRolePresenter = async (req, res, next) => {
+    const responseModel = new RoleResponseModel(req.role);
     req.statusCode = RoleSuccessResponses.CREATE_ROLE_SUCCESS.code;
     req.presenterModel = prepareSuccessResponse(
         RoleSuccessResponses.CREATE_ROLE_SUCCESS,
         null,
-        { }
+        responseModel
     );
     next();
 };
