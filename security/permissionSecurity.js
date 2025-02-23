@@ -1,12 +1,12 @@
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
 import { prepareErrorLog } from "../errorLog/errorLog.js";
-import { getCommunityByIdQuery } from "../database/queries/community/communityQueries";
+import { getCommunityByIdQuery } from "../database/queries/community/communityQueries.js";
 import { getRoleByIdQuery, getRolesOfUserInCommunityQuery } from "../database/queries/role/roleQueries.js";
 import { isEmpty } from "lodash";
 import { aggregatePermissions, createMaxRolePermissionResponse, createPermissionsResponse } from "../helpers/permissions.js";
 
-const roleSecurity = async (req, res, next) => {
+const permissionSecurity = async (req, res, next) => {
     try {
         const activeCommunityId = req.header("activeCommunityId");
         const community = await getCommunityByIdQuery(activeCommunityId);
@@ -36,12 +36,12 @@ const roleSecurity = async (req, res, next) => {
             }
         }
     } catch (error) {
-        prepareErrorLog(error, roleSecurity.name);
+        prepareErrorLog(error, permissionSecurity.name);
         return res.status(CommonErrorResponses.SERVER_ERROR.code)
             .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null)); 
     }
 };
 
 export {
-    roleSecurity
+    permissionSecurity
 }
