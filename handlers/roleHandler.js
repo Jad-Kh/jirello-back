@@ -6,7 +6,8 @@ import {
     getRoleByTitleQuery,
     getRolesOfCommunityPaginatedQuery,
     getRolesOfCommunityQuery,
-    removeUserFromRoleQuery
+    removeUserFromRoleQuery,
+    updateRoleQuery
 } from "../database/queries/role/roleQueries.js";
 import { prepareErrorLog } from "../errorLog/errorLog.js";
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
@@ -24,7 +25,7 @@ import pkg from "lodash";
 import { prepareNesting } from "../helpers/nesting.js";
 import { CommunityPermissionsRequestModel } from "../requests/community/utils/CommunityPermissionsRequestModel.js";
 import { RoleRequestModel } from "../requests/role/RoleRequestModel.js"
-import { Permissions } from "../helpers/permissions.js";
+import { hasPermission, Permissions, permissionTypes } from "../helpers/permissions.js";
 
 const { isEmpty } = pkg;
 
@@ -73,6 +74,39 @@ const createRoleHandler = async (req, res, next) => {
         }
     } catch(error) {
         prepareErrorLog(error, assignRoleToUserHandler.name);
+        return res.status(CommonErrorResponses.SERVER_ERROR.code)
+            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    }
+};
+
+const updateRoleHandler = async(req, res, next) => {
+    try {
+        const requestModel = req.requestModel;
+        const role = await getRoleByIdQuery(requestModel.id);
+        if (isEmpty(role)) {
+            return res.status(RoleErrorResponses.ROLE_NOT_FOUND.code)
+              .json(prepareErrorResponse(RoleErrorResponses.ROLE_NOT_FOUND, null));
+        } else {
+            const userPermissions = req.userPermissions;
+            const userId = req.user.id;
+            let requiredPermissions = [];
+            if(role.userIds.includes(userId)) {
+                requiredPermissions = [Permissions.EDIT_OWN, Permissions.CHANGE_OWN];
+            } else {
+                requiredPermissions = [Permissions.EDIT_OTHER, Permissions.CHANGE_OTHER];
+            }
+            if(hasPermission(userPermissions, permissionTypes.ROLES, requiredPermissions)) {
+                const { id, ...updateModel } = requestModel;
+                const updatedRole = await updateRoleQuery(id, updateModel);
+                req.role = updatedRole;
+                next();
+            } else {
+                return res.status(CommonErrorResponses.UNAUTHORIZED.code)
+                    .json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));                
+            }
+        }
+    } catch(error) {
+        prepareErrorLog(error, updateRoleHandler.name);
         return res.status(CommonErrorResponses.SERVER_ERROR.code)
             .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
     }
@@ -199,6 +233,7 @@ const getCommunityRoleHierarchyHandler = async(req, res, next) => {
 
 export {
     createRoleHandler,
+    updateRoleHandler,
     assignRoleToUserHandler,
     removeUserFromRoleHandler,
     getCommunityRolesHandler,

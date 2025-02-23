@@ -4,7 +4,8 @@ const roleRoutes = express.Router();
 import { 
     assignRoleToUserValidator, 
     createRoleValidator, 
-    removeUserFromRoleValidator 
+    removeUserFromRoleValidator, 
+    updateRoleValidator
 } from '../validators/roleValidators.js';
 import {
     assignRoleToUserHandler,
@@ -12,18 +13,21 @@ import {
     getCommunityRoleHierarchyHandler,
     getCommunityRolesHandler,
     getCommunityRolesPaginatedHandler,
-    removeUserFromRoleHandler
+    removeUserFromRoleHandler,
+    updateRoleHandler
 } from '../handlers/roleHandler.js';
 import {
     assignRoleToUserPresenter,
     createRolePresenter,
     getCommunityRoleHierarchyPresenter,
     getCommunityRolesPresenter,
-    removeUserFromRolePresenter
+    removeUserFromRolePresenter,
+    updateRolePresenter
 } from '../presenters/rolePresenter.js';
 import { roleController } from '../controllers/roleController.js';
 import { tokenSecurity } from '../security/tokenSecurity.js';
 import { communityByIdValidator } from '../validators/communityValidators.js';
+import { roleSecurity } from '../security/roleSecurity.js';
 
 roleRoutes.post(
     "/create-role",
@@ -31,6 +35,16 @@ roleRoutes.post(
     createRoleValidator,
     createRoleHandler,
     createRolePresenter,
+    roleController
+);
+
+roleRoutes.put(
+    "/update-role",
+    tokenSecurity,
+    roleSecurity,
+    updateRoleValidator,
+    updateRoleHandler,
+    updateRolePresenter,
     roleController
 );
 
@@ -81,4 +95,4 @@ roleRoutes.get(
 
 export {
     roleRoutes
-}
+};

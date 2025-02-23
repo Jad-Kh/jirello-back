@@ -8,6 +8,16 @@ const createRoleValidationScheme = Joi.object().keys({
     projectBased: Joi.boolean()
 });
 
+const updateRoleValidationScheme = Joi.object().keys({
+    title: Joi.string().min(2).max(30),
+    communityId: Joi.string(),
+    overrideAll: Joi.string(),
+    parentRoleId: Joi.string(),
+    priorityPosition: Joi.number(),
+    projectBased: Joi.boolean(),
+    projectIds: Joi.array()
+});
+
 const roleByIdValidationScheme = Joi.object().keys({
     id: Joi.string().required().alphanum()
 });
@@ -24,6 +34,7 @@ const removeUserFromRoleValidationScheme = Joi.object().keys({
 
 export {
     createRoleValidationScheme,
+    updateRoleValidationScheme,
     roleByIdValidationScheme,
     assignUserToRoleValidationScheme,
     removeUserFromRoleValidationScheme

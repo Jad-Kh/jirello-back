@@ -15,6 +15,17 @@ const createRolePresenter = async (req, res, next) => {
     next();
 };
 
+const updateRolePresenter = async (req, res, next) => {
+    const requestModel = new RoleResponseModel(req.role);
+    req.statusCode = RoleSuccessResponses.UPDATE_ROLE_SUCCESS.code;
+    req.presenterModel = prepareSuccessResponse(
+        RoleSuccessResponses.UPDATE_ROLE_SUCCESS,
+        null,
+        requestModel
+    );
+    next();
+};
+
 const assignRoleToUserPresenter = async (req, res, next) => {
     req.statusCode = RoleSuccessResponses.ASSIGN_USER_TO_ROLE_SUCCESS.code;
     req.presenterModel = prepareSuccessResponse(
@@ -59,6 +70,7 @@ const getCommunityRoleHierarchyPresenter = async (req, res, next) => {
 
 export {
     createRolePresenter,
+    updateRolePresenter,
     assignRoleToUserPresenter,
     removeUserFromRolePresenter,
     getCommunityRolesPresenter,
