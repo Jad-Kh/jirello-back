@@ -1,4 +1,4 @@
-import { generateJWT, generateJWTWithExpiration } from "../helpers/jwtkit.js";
+import { generateJWTWithExpiration } from "../helpers/jwtkit.js";
 import { prepareErrorLog } from "../errorLog/errorLog.js";
 import { CommonErrorResponses } from "../responses/messages/errors/common/commonErrorResponse.js";
 import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";

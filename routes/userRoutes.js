@@ -68,7 +68,7 @@ userRoutes.get(
     roleByIdValidator,
     getRoleUsersHandler,
     getRoleUsersPresenter,
-    userController
+    userController,
 );
 
 userRoutes.get(
@@ -77,7 +77,7 @@ userRoutes.get(
     roleByIdValidator,
     getRoleUsersPaginatedHandler,
     getRoleUsersPresenter,
-    userController
+    userController,
 );
 
 export {

@@ -35,19 +35,24 @@ const createRoleValidator = (req, res, next) => {
 
 const updateRoleValidator = (req, res, next) => {
   try {
-      const bodyReceived = new RoleRequestModel(req.body);
-      const result = updateRoleValidationScheme.validate(bodyReceived);
-      if (result.error) {
-          return res.status(RoleErrorResponses.UPDATE_ERROR.code)
-            .json(prepareErrorResponse(RoleErrorResponses.UPDATE_ERROR, result?.error?.message));
-      } else {
-          req.requestModel = bodyReceived;
-          next();
-      }
+    const bodyReceived = new RoleRequestModel(req.body);
+    const result = updateRoleValidationScheme.validate(bodyReceived);
+    if (result.error) {
+        return res.status(RoleErrorResponses.UPDATE_ERROR.code)
+          .json(prepareErrorResponse(RoleErrorResponses.UPDATE_ERROR, result?.error?.message));
+    } else {
+        if(!req.params.id) {
+            return res.status(RoleErrorResponses.ROLE_NOT_FOUND.code)
+              .json(prepareErrorResponse(RoleErrorResponses.ROLE_NOT_FOUND, null));          
+        }
+        bodyReceived.id = req.params.id;
+        req.requestModel = bodyReceived;
+        next();
+    }
   } catch(error) {
-      prepareErrorLog(error, updateRoleValidator.name);
-      return res.status(CommonErrorResponses.SERVER_ERROR.code)
-        .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));        
+    prepareErrorLog(error, updateRoleValidator.name);
+    return res.status(CommonErrorResponses.SERVER_ERROR.code)
+      .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));        
   }
 };
 

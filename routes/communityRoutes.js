@@ -45,7 +45,7 @@ communityRoutes.post(
 );
 
 communityRoutes.put(
-    "/update-community",
+    "/update-community/:id",
     tokenSecurity,
     updateCommunityValidator,
     updateCommunityHandler,
@@ -90,7 +90,7 @@ communityRoutes.put(
 );
 
 communityRoutes.put(
-    "/update-community-permissions",
+    "/update-community-permissions/:id",
     tokenSecurity,
     updateCommunityPermissionsValidator,
     updateCommunityPermissionsHandler,

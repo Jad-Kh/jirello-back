@@ -25,7 +25,7 @@ import pkg from "lodash";
 import { prepareNesting } from "../helpers/nesting.js";
 import { CommunityPermissionsRequestModel } from "../requests/community/utils/CommunityPermissionsRequestModel.js";
 import { RoleRequestModel } from "../requests/role/RoleRequestModel.js"
-import { hasPermission, Permissions, permissionTypes } from "../helpers/permissions.js";
+import { Permissions } from "../helpers/permissions.js";
 
 const { isEmpty } = pkg;
 
@@ -87,23 +87,10 @@ const updateRoleHandler = async(req, res, next) => {
             return res.status(RoleErrorResponses.ROLE_NOT_FOUND.code)
               .json(prepareErrorResponse(RoleErrorResponses.ROLE_NOT_FOUND, null));
         } else {
-            const userPermissions = req.userPermissions;
-            const userId = req.user.id;
-            let requiredPermissions = [];
-            if(role.userIds.includes(userId)) {
-                requiredPermissions = [Permissions.EDIT_OWN, Permissions.CHANGE_OWN];
-            } else {
-                requiredPermissions = [Permissions.EDIT_OTHER, Permissions.CHANGE_OTHER];
-            }
-            if(hasPermission(userPermissions, permissionTypes.ROLES, requiredPermissions)) {
-                const { id, ...updateModel } = requestModel;
-                const updatedRole = await updateRoleQuery(id, updateModel);
-                req.role = updatedRole;
-                next();
-            } else {
-                return res.status(CommonErrorResponses.UNAUTHORIZED.code)
-                    .json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));                
-            }
+            const { id, ...updateModel } = requestModel;
+            const updatedRole = await updateRoleQuery(id, updateModel);
+            req.role = updatedRole;
+            next();
         }
     } catch(error) {
         prepareErrorLog(error, updateRoleHandler.name);

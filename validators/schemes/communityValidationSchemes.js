@@ -16,7 +16,6 @@ const createCommunityValidationScheme = Joi.object().keys({
 });
 
 const updateCommunityValidationScheme = Joi.object().keys({
-    id: Joi.string().required(),
     name: Joi.string(),
     ownerIds: Joi.array().items(Joi.string().alphanum()),
     userIds: Joi.array().items(Joi.string().alphanum()),

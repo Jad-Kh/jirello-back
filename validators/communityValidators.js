@@ -64,6 +64,11 @@ const updateCommunityValidator = (req, res, next) => {
       return res.status(CommunityErrorResponses.UPDATE_ERROR.code)
         .json(prepareErrorResponse(CommunityErrorResponses.UPDATE_ERROR, result?.error?.message));      
     } else {
+      if(!req.params.id) {
+        return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
+          .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));        
+      }
+      bodyReceived.id = req.params.id;
       req.requestModel = bodyReceived;
       next();
     }  
@@ -152,8 +157,13 @@ const updateCommunityPermissionsValidator = (req, res, next) => {
     const result = updateCommunityPermissionsValidationScheme.validate(bodyReceived);
     if (result.error) {
       return res.status(CommonErrorResponses.REQUIRED.code)
-        .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+        .json(prepareErrorResponse(CommonErrorResponses.REQUIRED, null));
     } else {
+      if(!req.params.id) {
+        return res.status(CommunityErrorResponses.COMMUNITY_NOT_FOUND.code)
+          .json(prepareErrorResponse(CommunityErrorResponses.COMMUNITY_NOT_FOUND, null));        
+      }
+      bodyReceived.id = req.params.id;
       req.requestModel = bodyReceived;
       next();
     }

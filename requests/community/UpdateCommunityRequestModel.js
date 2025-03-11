@@ -1,7 +1,6 @@
 import { CommunityPermissionsRequestModel } from "./utils/CommunityPermissionsRequestModel.js";
 
 class UpdateCommunityRequestModel {
-    id = undefined;
     name = undefined;
     ownerIds = undefined;
     userIds = undefined;
@@ -10,7 +9,6 @@ class UpdateCommunityRequestModel {
     permissions = undefined;
 
     constructor(values) {
-        this.id = values.id;
         this.name = values.name;
         this.ownerIds = values.ownerIds;
         this.userIds = values.userIds;

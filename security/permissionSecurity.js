@@ -5,6 +5,7 @@ import { getCommunityByIdQuery } from "../database/queries/community/communityQu
 import { getRoleByIdQuery, getRolesOfUserInCommunityQuery } from "../database/queries/role/roleQueries.js";
 import { isEmpty } from "lodash";
 import { aggregatePermissions, createMaxRolePermissionResponse, createPermissionsResponse } from "../helpers/permissions.js";
+import { PERMISSIONS_MAP } from "../helpers/permissionsMap.js";
 
 const permissionSecurity = async (req, res, next) => {
     try {
@@ -15,25 +16,40 @@ const permissionSecurity = async (req, res, next) => {
                 .json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));
         } else {
             const user = req.user;
+            let userPermissions = null;
             if(user.isAdmin || community.ownerIds.includes(user._id)) {
-                req.userPermissions = createMaxRolePermissionResponse();
-                return next();
+                userPermissions = createMaxRolePermissionResponse();
             }
             const priorityRole = await getRoleByIdQuery(user.userRoles.priorityRoleId);
             if(!isEmpty(priorityRole)) {
-                req.userPermissions = createPermissionsResponse(priorityRole.permissionOverrides);
-                return next();
-            }
+                userPermissions = createPermissionsResponse(priorityRole.permissionOverrides);
+            }   
             const userRolesInCommunity = await getRolesOfUserInCommunityQuery(activeCommunityId, user._id);  
             const overrideAllRoles = userRolesInCommunity.filter((r) => r.overrideAll);
             const roles = overrideAllRoles.length > 0 ? overrideAllRoles : userRolesInCommunity;
             if(roles.length > 0) {
-                req.userPermissions = aggregatePermissions(roles);
-                return next();
+                userPermissions = aggregatePermissions(roles);
             } else {
-                req.userPermissions = createPermissionsResponse(community.permissions);
-                return next();
+                userPermissions = createPermissionsResponse(community.permissions);
             }
+            const route = `${req.baseUrl}${req.path}`;
+            const method = req.method;
+            const permissionEntry = PERMISSIONS_MAP[route]?.[method];
+            if (!permissionEntry) {
+                return res.status(CommonErrorResponses.UNAUTHORIZED.code)
+                    .json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));
+            }
+            const { domain, permissions } = typeof permissionEntry === 'function' ? permissionEntry(req) : permissionEntry;
+            if (!domain || !permissions) {
+                return res.status(CommonErrorResponses.UNAUTHORIZED.code)
+                    .json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));
+            }
+            const hasPermission = permissions.some((perm) => userPermissions[domain]?.has(perm));
+            if (!hasPermission) {
+                return res.status(CommonErrorResponses.UNAUTHORIZED.code)
+                    .json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));
+            }
+            next();
         }
     } catch (error) {
         prepareErrorLog(error, permissionSecurity.name);
@@ -44,4 +60,4 @@ const permissionSecurity = async (req, res, next) => {
 
 export {
     permissionSecurity
-}
+};

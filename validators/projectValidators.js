@@ -32,6 +32,11 @@ const updateProjectValidator = (req, res, next) => {
             return res.status(ProjectErrorResponses.PROJECT_UPDATE_ERROR.code)
               .json(prepareErrorResponse(ProjectErrorResponses.PROJECT_UPDATE_ERROR, result?.error?.message));
         } else {
+            if(!req.params.id) {
+                return res.status(ProjectErrorResponses.PROJECT_NOT_FOUND.code)
+                  .json(prepareErrorResponse(ProjectErrorResponses.PROJECT_NOT_FOUND, null));
+            }
+            bodyReceived.id = req.params.id;
             req.requestModel = bodyReceived;
             next();
         }
@@ -45,4 +50,4 @@ const updateProjectValidator = (req, res, next) => {
 export {
     createProjectValidator,
     updateProjectValidator
-}
+};

@@ -27,7 +27,6 @@ import {
 import { roleController } from '../controllers/roleController.js';
 import { tokenSecurity } from '../security/tokenSecurity.js';
 import { communityByIdValidator } from '../validators/communityValidators.js';
-import { permissionSecurity } from '../security/permissionSecurity.js';
 
 roleRoutes.post(
     "/create-role",
@@ -39,9 +38,8 @@ roleRoutes.post(
 );
 
 roleRoutes.put(
-    "/update-role",
+    "/update-role/:id",
     tokenSecurity,
-    permissionSecurity,
     updateRoleValidator,
     updateRoleHandler,
     updateRolePresenter,

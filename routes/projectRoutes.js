@@ -18,7 +18,7 @@ projectRoutes.post(
 );
 
 projectRoutes.put(
-    "/update-project",
+    "/update-project/:id",
     tokenSecurity,
     updateProjectValidator,
     updateProjectHandler,
