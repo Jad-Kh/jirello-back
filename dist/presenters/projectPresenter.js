@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getUserProjectsPresenter = exports.deleteProjectPresenter = exports.updateProjectPresenter = exports.createProjectPresenter = void 0;
+const presenting_1 = require("../helpers/presenting");
+const ProjectSuccessResponses_ts_1 = require("../responses/success/ProjectSuccessResponses.ts");
+const ProjectResponse_ts_1 = require("../models/project/ProjectResponse.ts");
+const ProjectsOfUserResponse_ts_1 = require("../models/project/ProjectsOfUserResponse.ts");
+exports.createProjectPresenter = (0, presenting_1.createPresenter)(ProjectSuccessResponses_ts_1.ProjectSuccessResponses.CREATE_PROJECT_SUCCESS, ProjectResponse_ts_1.ProjectResponse, "project");
+exports.updateProjectPresenter = (0, presenting_1.createPresenter)(ProjectSuccessResponses_ts_1.ProjectSuccessResponses.UPDATE_PROJECT_SUCCESS, ProjectResponse_ts_1.ProjectResponse, "project");
+exports.deleteProjectPresenter = (0, presenting_1.createPresenter)(ProjectSuccessResponses_ts_1.ProjectSuccessResponses.DELETE_PROJECT_SUCCESS, ProjectResponse_ts_1.ProjectResponse, "project");
+exports.getUserProjectsPresenter = (0, presenting_1.createPresenter)(ProjectSuccessResponses_ts_1.ProjectSuccessResponses.PROJECTS_OF_USER_SUCCESS, ProjectsOfUserResponse_ts_1.ProjectsOfUserResponse, "projects", true);

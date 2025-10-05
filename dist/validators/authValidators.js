@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.logoutValidator = exports.refreshTokenValidator = exports.recoveryValidator = exports.logInValidator = exports.signUpValidator = void 0;
+const validator_ts_1 = require("../helpers/validator.ts");
+const AuthErrorResponses_ts_1 = require("../responses/errors/AuthErrorResponses.ts");
+const UserErrorResponses_ts_1 = require("../responses/errors/UserErrorResponses.ts");
+const authValidationScheme_ts_1 = require("./schemes/authValidationScheme.ts");
+exports.signUpValidator = (0, validator_ts_1.createValidator)(authValidationScheme_ts_1.AuthValidationSchemes.signUpValidationScheme, AuthErrorResponses_ts_1.AuthErrorResponses.SIGNUP_VALIDATION_ERROR);
+exports.logInValidator = (0, validator_ts_1.createValidator)(authValidationScheme_ts_1.AuthValidationSchemes.logInValidationScheme, AuthErrorResponses_ts_1.AuthErrorResponses.LOGIN_VALIDATION_ERROR);
+exports.recoveryValidator = (0, validator_ts_1.createValidator)(authValidationScheme_ts_1.AuthValidationSchemes.recoveryValidationScheme, AuthErrorResponses_ts_1.AuthErrorResponses.INVALID_EMAIL);
+exports.refreshTokenValidator = (0, validator_ts_1.createValidator)(authValidationScheme_ts_1.AuthValidationSchemes.refreshTokenValidationScheme, UserErrorResponses_ts_1.UserErrorResponses.USER_NOT_FOUND, true);
+exports.logoutValidator = (0, validator_ts_1.createValidator)(authValidationScheme_ts_1.AuthValidationSchemes.logoutValidationScheme, UserErrorResponses_ts_1.UserErrorResponses.USER_NOT_FOUND, true);

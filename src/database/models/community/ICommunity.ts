@@ -1,0 +1,16 @@
+import { ICommon } from "../ICommon.ts";
+import { ICommunityPermissions } from "./ICommunityPermissions.ts";
+
+export type ICommunity = ICommon & {
+    name: string;
+    flag: string;
+    ownerIds: string[];
+    userIds: string[];
+    projectIds: string[];
+    template: string;
+    permissions: ICommunityPermissions;
+    roleIds: string[];
+    screenIds: string[];
+    validationLevel: number;
+    requiredValidationLevel: number;
+}

@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getUsersOfRolePresenter = exports.getUsersOfCommunityPresenter = exports.deleteUserPresenter = exports.updateUserPresenter = exports.getUserPresenter = void 0;
+const presenting_1 = require("../helpers/presenting");
+const UserSuccessResponses_ts_1 = require("../responses/success/UserSuccessResponses.ts");
+const UserResponse_ts_1 = require("../models/user/UserResponse.ts");
+const UsersOfCommunityResponse_ts_1 = require("../models/user/UsersOfCommunityResponse.ts");
+const UsersOfEntityResponse_ts_1 = require("../models/user/UsersOfEntityResponse.ts");
+exports.getUserPresenter = (0, presenting_1.createPresenter)(UserSuccessResponses_ts_1.UserSuccessResponses.GET_USER_SUCCESS, UserResponse_ts_1.UserResponse, "user");
+exports.updateUserPresenter = (0, presenting_1.createPresenter)(UserSuccessResponses_ts_1.UserSuccessResponses.UPDATE_USER_SUCCESS, UserResponse_ts_1.UserResponse, "user");
+exports.deleteUserPresenter = (0, presenting_1.createPresenter)(UserSuccessResponses_ts_1.UserSuccessResponses.DELETE_USER_SUCCESS, UserResponse_ts_1.UserResponse, "user");
+exports.getUsersOfCommunityPresenter = (0, presenting_1.createPresenter)(UserSuccessResponses_ts_1.UserSuccessResponses.USERS_OF_COMMUNITY_SUCCESS, UsersOfCommunityResponse_ts_1.UsersOfCommunityResponse, "users", true);
+exports.getUsersOfRolePresenter = (0, presenting_1.createPresenter)(UserSuccessResponses_ts_1.UserSuccessResponses.USERS_OF_ROLE_SUCCESS, UsersOfEntityResponse_ts_1.UsersOfEntityResponse, "users", true);
