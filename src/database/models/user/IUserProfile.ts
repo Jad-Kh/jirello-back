@@ -1,4 +1,4 @@
-import { ICommon } from "../ICommon.ts";
+import { ICommon } from "../ICommon.js";
 
 export type IUserProfile = ICommon & {
     username: string;
@@ -7,4 +7,4 @@ export type IUserProfile = ICommon & {
     birthday: string;
     email: string;
     password: string;
-}
+};

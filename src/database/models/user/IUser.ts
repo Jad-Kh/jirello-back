@@ -1,9 +1,9 @@
-import { ICommon } from "../ICommon.ts";
-import { IUserProfile } from "./IUserProfile.ts";
-import { IUserTasks } from "./IUserTasks.ts";
-import { IUserNotifications } from "./IUserNotifications.ts";
-import { IUserRoles } from "./IUserRoles.ts";
-import { IUserAccess } from "./IUserAccess.ts";
+import { ICommon } from "../ICommon.js";
+import { IUserAccess } from "./IUserAccess.js";
+import { IUserNotifications } from "./IUserNotifications.js";
+import { IUserProfile } from "./IUserProfile.js";
+import { IUserRoles } from "./IUserRoles.js";
+import { IUserTasks } from "./IUserTasks.js";
 
 export type IUser = ICommon & {
     profile: IUserProfile;
@@ -15,4 +15,4 @@ export type IUser = ICommon & {
     roles?: IUserRoles;
     permittedScreenIds?: string[];
     access?: IUserAccess;
-}
+};

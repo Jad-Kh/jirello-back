@@ -1,10 +1,10 @@
 export type ICommonId = {
     id?: string;
-}
+};
 
 export type ICommonTimeStamps = {
-    createdAt?: string;
-    updatedAt?: string;
-}
+    createdAt?: Date;
+    updatedAt?: Date;
+};
 
 export type ICommon = ICommonId & ICommonTimeStamps;

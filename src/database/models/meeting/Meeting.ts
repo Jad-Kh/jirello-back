@@ -1,6 +1,6 @@
 import mongoose, { Model } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
-import { IMeeting } from "./IMeeting.ts";
+import { IMeeting } from "./IMeeting.js";
 
 const MeetingModelSchema = new mongoose.Schema(
     {
@@ -13,12 +13,12 @@ const MeetingModelSchema = new mongoose.Schema(
             required: true,
         },
         organizerIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
         userIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
@@ -29,10 +29,11 @@ const MeetingModelSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-    }
-)
+    },
+);
 
 MeetingModelSchema.plugin(mongoosePaginate);
 
 const MeetingModel: Model<IMeeting> = mongoose.model<IMeeting>("Meetings", MeetingModelSchema);
-export { MeetingModel }
+
+export { MeetingModel };

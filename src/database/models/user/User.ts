@@ -1,17 +1,17 @@
 import mongoose, { Model } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
-
-import { UserProfile } from "./UserProfile.ts";
-import { UserTasks } from "./UserTasks.ts";
-import { UserNotifications } from "./UserNotifications.ts";
-import { UserRoles } from "./UserRoles.ts";
-import { UserAccess } from "./UserAccess.ts";
-import { IUser } from "./IUser.ts";
+import { IUser } from "./IUser.js";
+import { UserAccess } from "./UserAccess.js";
+import { UserNotifications } from "./UserNotifications.js";
+import { UserProfile } from "./UserProfile.js";
+import { UserRoles } from "./UserRoles.js";
+import { UserTasks } from "./UserTasks.js";
 
 const UserModelSchema = new mongoose.Schema(
     {
         profile: {
-            type: UserProfile
+            type: UserProfile,
+            required: true,
         },
         isAdmin: {
             type: Boolean,
@@ -19,39 +19,47 @@ const UserModelSchema = new mongoose.Schema(
             required: true,
         },
         communityIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
         ownedCommunityIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
         tasks: {
             type: UserTasks,
+            default: () => ({}),
         },
         notifications: {
             type: UserNotifications,
+            default: () => ({}),
         },
         roles: {
-            type: UserRoles
+            type: UserRoles,
+            default: () => ({}),
         },
         permittedScreenIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
         access: {
-            type: UserAccess
-        }
+            type: UserAccess,
+            default: () => ({}),
+        },
     },
     {
         timestamps: true,
-    }
-)
+    },
+);
+
+UserModelSchema.index({ "profile.email": 1 }, { unique: true });
+UserModelSchema.index({ "profile.username": 1 }, { unique: true });
 
 UserModelSchema.plugin(mongoosePaginate);
 
 const UserModel: Model<IUser> = mongoose.model<IUser>("Users", UserModelSchema);
-export { UserModel }
+
+export { UserModel };

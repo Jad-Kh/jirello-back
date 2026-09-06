@@ -1,7 +1,10 @@
-import { CommunityRequest } from "./createCommunityRequest.js";
 import { CommunityResponse } from "../../../models/community/CommunityResponse.js";
+import { CommunityRequest } from "./createCommunityRequest.js";
 
-export const createCommunityMapper = async (community: CommunityRequest, userId: string): Promise<CommunityResponse> => {
+export const createCommunityMapper = async (
+    community: CommunityRequest,
+    userId: string,
+): Promise<CommunityResponse> => {
     const ownerIds: string[] = [userId];
     const userIds: string[] = [];
     const projectIds: string[] = [];
@@ -21,6 +24,6 @@ export const createCommunityMapper = async (community: CommunityRequest, userId:
         roleIds,
         screenIds,
         validationLevel,
-        requiredValidationLevel
+        requiredValidationLevel,
     };
 };

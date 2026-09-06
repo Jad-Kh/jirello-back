@@ -3,12 +3,12 @@ import mongoose from "mongoose";
 const UserTasks = new mongoose.Schema(
     {
         taskIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
         taskGroupIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
@@ -16,11 +16,9 @@ const UserTasks = new mongoose.Schema(
             type: Number,
             default: 0,
             required: false,
-        }
+        },
     },
-    {
-        timestamps: true,
-    }
+    { _id: false, timestamps: false },
 );
 
-export { UserTasks }
+export { UserTasks };

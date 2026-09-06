@@ -1,38 +1,18 @@
-import { createPresenter } from "../helpers/presenting.ts";
-import { AuthSuccessResponses } from "../responses/success/AuthSuccessResponses.ts";
-import { UserResponse } from "../models/user/UserResponse.ts";
-import { RefreshTokenResponse } from "../models/auth/RefreshTokenResponse.ts";
+import { createPresenter } from "../helpers/presenting.js";
+import { AuthResponse } from "../models/auth/AuthResponse.js";
+import { RefreshTokenResponse } from "../models/auth/RefreshTokenResponse.js";
+import { AuthSuccessResponses } from "../responses/success/AuthSuccessResponses.js";
 
-export const registerPresenter = createPresenter(
-    AuthSuccessResponses.REGISTER_SUCCESS,
-    UserResponse,
-    "user"
-);
+export const logInPresenter = createPresenter(AuthSuccessResponses.LOGIN_SUCCESS, AuthResponse, "auth");
 
-export const logInPresenter = createPresenter(
-    AuthSuccessResponses.LOGIN_SUCCESS,
-    UserResponse,
-    "user"
-);
+export const signUpPresenter = createPresenter(AuthSuccessResponses.SIGNUP_SUCCESS, AuthResponse, "auth");
 
-export const signUpPresenter = createPresenter(
-    AuthSuccessResponses.SIGNUP_SUCCESS,
-    UserResponse,
-    "user"
-)
-
-export const logoutPresenter = createPresenter(
-    AuthSuccessResponses.LOGOUT_SUCCESS
-);
+export const logoutPresenter = createPresenter(AuthSuccessResponses.LOGOUT_SUCCESS);
 
 export const refreshTokenPresenter = createPresenter(
     AuthSuccessResponses.REFRESH_TOKEN_SUCCESS,
     RefreshTokenResponse,
-    "token"
+    "token",
 );
 
-export const recoveryPresenter = createPresenter(
-    AuthSuccessResponses.RECOVERY_SUCCESS,
-    UserResponse,
-    "user"
-)
+export const recoveryPresenter = createPresenter(AuthSuccessResponses.RECOVERY_SUCCESS);

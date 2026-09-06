@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: jirello-queue-worker
+spec:
+    replicas: 2
+    strategy:
+        rollingUpdate:
+            maxUnavailable: 0
+            maxSurge: 1
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: jirello-back
+            app.kubernetes.io/component: queue-worker
+    template:
+        metadata:
+            labels:
+                app.kubernetes.io/name: jirello-back
+                app.kubernetes.io/component: queue-worker
+        spec:
+            serviceAccountName: jirello-back
+            terminationGracePeriodSeconds: 45
+            securityContext:
+                runAsNonRoot: true
+                seccompProfile:
+                    type: RuntimeDefault
+            topologySpreadConstraints:
+                - maxSkew: 1
+                  topologyKey: kubernetes.io/hostname
+                  whenUnsatisfiable: DoNotSchedule
+                  labelSelector:
+                      matchLabels:
+                          app.kubernetes.io/name: jirello-back
+                          app.kubernetes.io/component: queue-worker
+            containers:
+                - name: queue-worker
+                  image: jirello-back:latest
+                  envFrom:
+                      - configMapRef:
+                            name: jirello-config
+                      - secretRef:
+                            name: jirello-secrets
+                  env:
+                      - name: PROCESS_ROLE
+                        value: queue-worker
+                      - name: INSTANCE_ID
+                        valueFrom:
+                            fieldRef:
+                                fieldPath: metadata.name
+                  ports:
+                      - name: http
+                        containerPort: 8082
+                  startupProbe: &startup
+                      httpGet: { path: /health/ready, port: http }
+                      periodSeconds: 5
+                      failureThreshold: 24
+                  readinessProbe: &readiness
+                      httpGet: { path: /health/ready, port: http }
+                      periodSeconds: 5
+                      timeoutSeconds: 3
+                      failureThreshold: 2
+                  livenessProbe: &liveness
+                      httpGet: { path: /health/live, port: http }
+                      periodSeconds: 10
+                      timeoutSeconds: 3
+                      failureThreshold: 3
+                  resources:
+                      requests: { cpu: 150m, memory: 256Mi }
+                      limits: { cpu: "1", memory: 768Mi }
+                  securityContext: &container-security
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                      readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: jirello-queue-worker
+    labels: { monitoring: jirello }
+spec:
+    selector:
+        app.kubernetes.io/name: jirello-back
+        app.kubernetes.io/component: queue-worker
+    ports:
+        - { name: http, port: 8082, targetPort: http }

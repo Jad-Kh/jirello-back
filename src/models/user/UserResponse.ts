@@ -1,7 +1,7 @@
-import { APISignature } from "../api/APISignature.ts";
-import { UserProfileResponse } from "./UserProfileResponse.ts";
-import { UserTasksResponse } from "./UserTasksResponse.ts";
-import { UserNotificationResponse } from "./UserNotificationResponse.ts";
+import { APISignature } from "../api/APISignature.js";
+import { UserNotificationResponse } from "./UserNotificationResponse.js";
+import { UserProfileResponse } from "./UserProfileResponse.js";
+import { UserTasksResponse } from "./UserTasksResponse.js";
 
 export class UserResponse extends APISignature {
     profile: UserProfileResponse;
@@ -14,10 +14,22 @@ export class UserResponse extends APISignature {
     constructor(values: UserResponse) {
         super(values);
         this.profile = new UserProfileResponse(values.profile);
-        this.isAdmin = values.isAdmin;
-        this.communityIds = values.communityIds;
-        this.ownedCommunityIds = values.ownedCommunityIds;
-        this.tasks = new UserTasksResponse(values.tasks);
-        this.notifications = new UserNotificationResponse(values.notifications);
+        this.isAdmin = values.isAdmin ?? false;
+        this.communityIds = values.communityIds ?? [];
+        this.ownedCommunityIds = values.ownedCommunityIds ?? [];
+        this.tasks = new UserTasksResponse(
+            values.tasks ?? {
+                taskIds: [],
+                taskGroupIds: [],
+                taskPerWeekAverage: 0,
+            },
+        );
+        this.notifications = new UserNotificationResponse(
+            values.notifications ?? {
+                mutedCommunityIds: [],
+                mutedChatIds: [],
+                muteAll: false,
+            },
+        );
     }
 }

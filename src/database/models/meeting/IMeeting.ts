@@ -1,9 +1,9 @@
-import { ICommon } from "../ICommon.ts";
+import { ICommon } from "../ICommon.js";
 
 export type IMeeting = ICommon & {
     name: string;
     schedule: string;
     organizerIds: string[];
     userIds: string[];
-    project: string;
-}
+    projectId: string;
+};

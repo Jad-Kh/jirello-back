@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: jirello-scheduler
+spec:
+    replicas: 2
+    strategy:
+        rollingUpdate: { maxUnavailable: 0, maxSurge: 1 }
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: jirello-back
+            app.kubernetes.io/component: scheduler
+    template:
+        metadata:
+            labels:
+                app.kubernetes.io/name: jirello-back
+                app.kubernetes.io/component: scheduler
+        spec:
+            serviceAccountName: jirello-back
+            terminationGracePeriodSeconds: 45
+            securityContext:
+                runAsNonRoot: true
+                seccompProfile: { type: RuntimeDefault }
+            topologySpreadConstraints:
+                - maxSkew: 1
+                  topologyKey: kubernetes.io/hostname
+                  whenUnsatisfiable: DoNotSchedule
+                  labelSelector:
+                      matchLabels:
+                          app.kubernetes.io/name: jirello-back
+                          app.kubernetes.io/component: scheduler
+            containers:
+                - name: scheduler
+                  image: jirello-back:latest
+                  envFrom:
+                      - configMapRef: { name: jirello-config }
+                      - secretRef: { name: jirello-secrets }
+                  env:
+                      - { name: PROCESS_ROLE, value: scheduler }
+                      - name: INSTANCE_ID
+                        valueFrom:
+                            fieldRef: { fieldPath: metadata.name }
+                  ports:
+                      - { name: http, containerPort: 8082 }
+                  startupProbe:
+                      { httpGet: { path: /health/ready, port: http }, periodSeconds: 5, failureThreshold: 24 }
+                  readinessProbe:
+                      {
+                          httpGet: { path: /health/ready, port: http },
+                          periodSeconds: 5,
+                          timeoutSeconds: 3,
+                          failureThreshold: 2,
+                      }
+                  livenessProbe:
+                      {
+                          httpGet: { path: /health/live, port: http },
+                          periodSeconds: 10,
+                          timeoutSeconds: 3,
+                          failureThreshold: 3,
+                      }
+                  resources:
+                      requests: { cpu: 100m, memory: 192Mi }
+                      limits: { cpu: 750m, memory: 512Mi }
+                  securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                      readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: jirello-scheduler
+    labels: { monitoring: jirello }
+spec:
+    selector:
+        app.kubernetes.io/name: jirello-back
+        app.kubernetes.io/component: scheduler
+    ports:
+        - { name: http, port: 8082, targetPort: http }

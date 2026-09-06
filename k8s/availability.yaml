@@ -1,0 +1,77 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+    name: jirello-api
+spec:
+    minAvailable: 2
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: jirello-back
+            app.kubernetes.io/component: api
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+    name: jirello-queue-worker
+spec:
+    minAvailable: 1
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: jirello-back
+            app.kubernetes.io/component: queue-worker
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+    name: jirello-scheduler
+spec:
+    minAvailable: 1
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: jirello-back
+            app.kubernetes.io/component: scheduler
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+    name: jirello-outbox-worker
+spec:
+    minAvailable: 1
+    selector:
+        matchLabels:
+            app.kubernetes.io/name: jirello-back
+            app.kubernetes.io/component: outbox-worker
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+    name: jirello-api
+spec:
+    scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: jirello-api }
+    minReplicas: 3
+    maxReplicas: 10
+    behavior:
+        scaleDown:
+            stabilizationWindowSeconds: 300
+    metrics:
+        - type: Resource
+          resource:
+              name: cpu
+              target: { type: Utilization, averageUtilization: 65 }
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+    name: jirello-queue-worker
+spec:
+    scaleTargetRef: { apiVersion: apps/v1, kind: Deployment, name: jirello-queue-worker }
+    minReplicas: 2
+    maxReplicas: 8
+    behavior:
+        scaleDown:
+            stabilizationWindowSeconds: 300
+    metrics:
+        - type: Resource
+          resource:
+              name: cpu
+              target: { type: Utilization, averageUtilization: 70 }

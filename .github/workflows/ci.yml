@@ -1,0 +1,36 @@
+name: CI
+
+on:
+    push:
+    pull_request:
+
+jobs:
+    verify:
+        runs-on: ubuntu-latest
+        env:
+            NODE_ENV: test
+            MONGO_CONNECT_URI: mongodb://127.0.0.1:27017/jirello-test
+            TEST_MONGO_URI: mongodb://127.0.0.1:27017/jirello-integration
+            JWT_SECRET: ci-secret-that-is-longer-than-thirty-two-characters
+            JWT_ACCESS_SECRET: ci-access-secret-that-is-longer-than-thirty-two-characters
+            JWT_REFRESH_SECRET: ci-refresh-secret-that-is-longer-than-thirty-two-characters
+            CORS_ORIGIN: http://localhost:3000
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 22
+                  cache: npm
+            - run: npm ci
+            - name: Start MongoDB replica set
+              run: |
+                  docker run -d --name mongo -p 27017:27017 mongo:8 --replSet rs0 --bind_ip_all
+                  until docker exec mongo mongosh --quiet --eval 'db.runCommand({ ping: 1 }).ok' | grep 1; do sleep 2; done
+                  docker exec mongo mongosh --quiet --eval 'rs.initiate({_id:"rs0",members:[{_id:0,host:"localhost:27017"}]})'
+                  sleep 3
+            - run: npm run lint
+            - run: npm run format:check
+            - run: npm run typecheck
+            - run: npm test
+            - run: npm run build
+            - run: npm audit --omit=dev

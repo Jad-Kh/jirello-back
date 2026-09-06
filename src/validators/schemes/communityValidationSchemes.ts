@@ -1,73 +1,54 @@
-import Joi from "joi"
+import Joi from "joi";
 
-const communityByIdValidationScheme = Joi.object().keys({
-    id: Joi.string().required().alphanum()
+const objectId = Joi.string().hex().length(24);
+const permissionList = Joi.array().items(Joi.number().integer().min(1).max(10)).unique();
+
+const communityByIdValidationScheme = Joi.object({ id: objectId.required() });
+
+const createCommunityValidationScheme = Joi.object({
+    name: Joi.string().trim().min(2).max(80).required(),
+    flag: Joi.string().trim().uppercase().min(2).max(5).required(),
+    template: Joi.string().trim().max(50).default("Normal"),
 });
 
-const createCommunityValidationScheme = Joi.object().keys({
-    name: Joi.string().required(),
-    flag: Joi.string().required().min(2).max(5),
-    tasks: Joi.array().required(),
-    taskGroups: Joi.array().required(),
-    meetings: Joi.array().required(),
-    projects: Joi.array().required(),
-    screens: Joi.array().required(),
-    roles: Joi.array().required(),
+const updateCommunityValidationScheme = Joi.object({
+    id: objectId.required(),
+    name: Joi.string().trim().min(2).max(80),
+    flag: Joi.string().trim().uppercase().min(2).max(5),
+    template: Joi.string().trim().max(50),
+    validationLevel: Joi.number().integer().min(0),
+    requiredValidationLevel: Joi.number().integer().min(0),
+}).min(2);
+
+const membershipValidationScheme = Joi.object({
+    communityId: objectId.required(),
+    userId: objectId.required(),
 });
 
-const updateCommunityValidationScheme = Joi.object().keys({
-    name: Joi.string(),
-    ownerIds: Joi.array().items(Joi.string().alphanum()),
-    userIds: Joi.array().items(Joi.string().alphanum()),
-    projectIds: Joi.array().items(Joi.string().alphanum()),
-    template: Joi.string(),
-    permissions: Joi.object({
-        tasks: Joi.array().required(),
-        taskGroups: Joi.array().required(),
-        meetings: Joi.array().required(),
-        projects: Joi.array().required(),
-        screens: Joi.array().required(),
-        roles: Joi.array().required(),
-    })
+const projectMembershipValidationScheme = Joi.object({
+    communityId: objectId.required(),
+    projectId: objectId.required(),
 });
 
-const addUserToCommunityValidationScheme = Joi.object().keys({
-    communityId: Joi.string().required().alphanum(),
-    userId: Joi.string().required().alphanum(),
-});
-
-const removeUserFromCommunityValidationScheme = Joi.object().keys({
-    communityId: Joi.string().required().alphanum(),
-    userId: Joi.string().required().alphanum(),
-});
-
-const addProjectToCommunityValidationScheme = Joi.object().keys({
-    communityId: Joi.string().required().alphanum(),
-    projectId: Joi.string().required().alphanum(),
-});
-
-const removeProjectFromCommunityValidationScheme = Joi.object().keys({
-    communityId: Joi.string().required().alphanum(),
-    projectId: Joi.string().required().alphanum(),
-});
-
-const updateCommunityPermissionsValidationScheme = Joi.object().keys({
-    id: Joi.string().required().alphanum(),
-    tasks: Joi.array().required(),
-    taskGroups: Joi.array().required(),
-    meetings: Joi.array().required(),
-    projects: Joi.array().required(),
-    screens: Joi.array().required(),
-    roles: Joi.array().required(),
+const updateCommunityPermissionsValidationScheme = Joi.object({
+    id: objectId.required(),
+    tasks: permissionList.required(),
+    taskGroups: permissionList.required(),
+    meetings: permissionList.required(),
+    projects: permissionList.required(),
+    screens: permissionList.required(),
+    roles: permissionList.required(),
+    users: permissionList.required(),
+    communities: permissionList.required(),
 });
 
 export const CommunityValidationSchemes = {
     communityByIdValidationScheme,
     createCommunityValidationScheme,
     updateCommunityValidationScheme,
-    addUserToCommunityValidationScheme,
-    removeUserFromCommunityValidationScheme,
-    addProjectToCommunityValidationScheme,
-    removeProjectFromCommunityValidationScheme,
-    updateCommunityPermissionsValidationScheme
+    addUserToCommunityValidationScheme: membershipValidationScheme,
+    removeUserFromCommunityValidationScheme: membershipValidationScheme,
+    addProjectToCommunityValidationScheme: projectMembershipValidationScheme,
+    removeProjectFromCommunityValidationScheme: projectMembershipValidationScheme,
+    updateCommunityPermissionsValidationScheme,
 };

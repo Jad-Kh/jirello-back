@@ -1,6 +1,6 @@
-import { ICommon } from "../ICommon.ts";
+import { ICommon } from "../ICommon.js";
 
 export type IUserRoles = ICommon & {
-    priorityRoleId: number;
-    rolesIds: string[];
-}
+    priorityRoleId?: string;
+    roleIds: string[];
+};

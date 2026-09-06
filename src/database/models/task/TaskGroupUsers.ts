@@ -7,19 +7,17 @@ const TaskGroupUsers = new mongoose.Schema(
             required: true,
         },
         reviewers: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
         userIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
-        }
+        },
     },
-    {
-        timestamps: true,
-    }
-)
+    { _id: false, timestamps: false },
+);
 
-export { TaskGroupUsers }
+export { TaskGroupUsers };

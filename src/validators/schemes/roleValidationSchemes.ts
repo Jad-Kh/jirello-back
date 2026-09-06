@@ -1,41 +1,35 @@
-import Joi from "joi"
+import Joi from "joi";
 
-const createRoleValidationScheme = Joi.object().keys({
-    title: Joi.string().required().min(2).max(30),
-    communityId: Joi.string().required(),
-    parentRoleId: Joi.string().alphanum(),
-    priorityPosition: Joi.number().required(),
-    projectBased: Joi.boolean()
+const objectId = Joi.string().hex().length(24);
+
+const createRoleValidationScheme = Joi.object({
+    title: Joi.string().trim().min(2).max(30).required(),
+    communityId: objectId.required(),
+    parentRoleId: objectId.allow(""),
+    priorityPosition: Joi.number().integer().min(0).required(),
+    projectBased: Joi.boolean().default(false),
 });
 
-const updateRoleValidationScheme = Joi.object().keys({
-    title: Joi.string().min(2).max(30),
-    communityId: Joi.string(),
-    overrideAll: Joi.string(),
-    parentRoleId: Joi.string(),
-    priorityPosition: Joi.number(),
+const updateRoleValidationScheme = Joi.object({
+    id: objectId.required(),
+    title: Joi.string().trim().min(2).max(30),
+    overrideAll: Joi.boolean(),
+    parentRoleId: objectId.allow(""),
+    priorityPosition: Joi.number().integer().min(0),
     projectBased: Joi.boolean(),
-    projectIds: Joi.array()
-});
+    projectIds: Joi.array().items(objectId),
+}).min(2);
 
-const roleByIdValidationScheme = Joi.object().keys({
-    id: Joi.string().required().alphanum()
-});
-
-const assignUserToRoleValidationScheme = Joi.object().keys({
-    roleId: Joi.string().required().alphanum(),
-    userId: Joi.string().required().alphanum(),
-});
-
-const removeUserFromRoleValidationScheme = Joi.object().keys({
-    roleId: Joi.string().required().alphanum(),
-    userId: Joi.string().required().alphanum(),
+const roleByIdValidationScheme = Joi.object({ id: objectId.required() });
+const roleMembershipValidationScheme = Joi.object({
+    roleId: objectId.required(),
+    userId: objectId.required(),
 });
 
 export const RoleValidationSchemes = {
     createRoleValidationScheme,
     updateRoleValidationScheme,
     roleByIdValidationScheme,
-    assignUserToRoleValidationScheme,
-    removeUserFromRoleValidationScheme
-}
+    assignUserToRoleValidationScheme: roleMembershipValidationScheme,
+    removeUserFromRoleValidationScheme: roleMembershipValidationScheme,
+};

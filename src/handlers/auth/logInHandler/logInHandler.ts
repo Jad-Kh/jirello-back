@@ -1,27 +1,43 @@
-import { IRequest, IResponse } from "../../../helpers/api.js";
-import { LogInRequest } from "./logInRequest.js";
+import bcrypt from "bcrypt";
 import { NextFunction } from "express";
 import { UserQueries } from "../../../database/queries/user.js";
-import { checkSecurity } from "../../../helpers/security.js";
-import { logInSecurity } from "./logInSecurity.js";
-import { IUser } from "../../../database/models/user/IUser.js";
-import { JWTkit } from "../../../helpers/jwtkit.js";
+import { IRequest, IResponse } from "../../../helpers/api.js";
+import { setRefreshTokenCookie } from "../../../helpers/authCookies.js";
 import { catchError } from "../../../helpers/errorLogging.js";
+import { JWTkit } from "../../../helpers/jwtkit.js";
+import { UserResponse } from "../../../models/user/UserResponse.js";
+import { prepareErrorResponse } from "../../../presenters/common/errorResponsePresenter.js";
+import { AuthErrorResponses } from "../../../responses/errors/AuthErrorResponses.js";
+import { LogInRequest } from "./logInRequest.js";
 
-export const logInHandler = async(req: IRequest<LogInRequest, "user">, res: IResponse, next: NextFunction): Promise<void> => {
+export const logInHandler = async (
+    req: IRequest<LogInRequest, "auth">,
+    res: IResponse,
+    next: NextFunction,
+): Promise<void> => {
     try {
-        const requestModel = req.requestModel;
-        const userByUsername = (requestModel?.username && await UserQueries.getUserByUsernameQuery(requestModel?.username)) as IUser;
-        const userByEmail = (requestModel?.email && await UserQueries.getUserByEmailQuery(requestModel?.email)) as IUser;
-        const user = userByUsername || userByEmail;
-        if(checkSecurity(await logInSecurity(res, user, requestModel.password, requestModel.username))) {
-            const refreshToken = JWTkit.generateJWT(user);
-            await UserQueries.updateUserAccessQuery(user.id as string, refreshToken);
-            const accessToken = JWTkit.generateJWTWithExpiration(user);
-            req.user = { user, refreshToken, accessToken };
-            return next();
+        const request = req.requestModel!;
+        const user = request.email
+            ? await UserQueries.getUserByEmailQuery(request.email)
+            : await UserQueries.getUserByUsernameQuery(request.username!);
+        const passwordMatches = user ? await bcrypt.compare(request.password, user.profile.password) : false;
+
+        if (!user || !passwordMatches) {
+            res.status(401).json(prepareErrorResponse(AuthErrorResponses.LOGIN_VALIDATION_ERROR, null));
+            return;
         }
-    } catch(error) {
+
+        const refreshToken = JWTkit.generateRefreshToken(user);
+        const accessToken = JWTkit.generateAccessToken(user);
+        await UserQueries.updateUserAccessQuery(user.id, JWTkit.hashToken(refreshToken));
+        setRefreshTokenCookie(res, refreshToken);
+
+        req.auth = {
+            accessToken,
+            user: new UserResponse(user.toObject({ virtuals: true }) as unknown as UserResponse),
+        };
+        next();
+    } catch (error) {
         catchError(error as Error, res, logInHandler.name);
     }
 };

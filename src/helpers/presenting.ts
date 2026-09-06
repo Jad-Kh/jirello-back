@@ -1,31 +1,26 @@
-import { prepareSuccessResponse } from "../presenters/common/successResponsePresenter.js";
+import { NextFunction, Request, Response } from "express";
 import { SuccessResponse } from "../models/api/SuccessResponse.js";
-import { Request, Response } from "express";
-import { NextFunction } from "express";
+import { prepareSuccessResponse } from "../presenters/common/successResponsePresenter.js";
 
-type Constructor<T> = new (data: any) => T;
+type Constructor = new (data: never) => unknown;
+type SuccessStatus = Pick<SuccessResponse<unknown>, "message" | "code">;
 
-export const createPresenter = <T>(
-    successResponse: SuccessResponse<T>,
-    ResponseModelClass: Constructor<T> | null = null,
-    dataKey: string | null = null,
-    setResStatus: boolean = false
-) => {
-    return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-        const reqAsAny = req as any;
-        const rawData = dataKey ? reqAsAny[dataKey] : reqAsAny.responseModel || {};
-        const responseModel: T | any = ResponseModelClass
-            ? new ResponseModelClass(rawData)
-            : rawData;
+export const createPresenter =
+    (
+        successResponse: SuccessStatus,
+        ResponseModelClass: Constructor | null = null,
+        dataKey: string | null = null,
+        setResponseStatus = false,
+    ) =>
+    (req: Request, res: Response, next: NextFunction): void => {
+        const requestState = req as unknown as Request & Record<string, unknown>;
+        const rawData = dataKey ? requestState[dataKey] : (requestState.responseModel ?? {});
+        const responseModel = ResponseModelClass ? new ResponseModelClass(rawData as never) : rawData;
 
-        const code = successResponse.code;
-        if (setResStatus) {
-            res.statusCode = code;
-        } else {
-            reqAsAny.statusCode = code;
-        }
-
-        reqAsAny.presenterModel = prepareSuccessResponse(successResponse, null, responseModel);
-        return next();
+        const resolvedSuccessResponse =
+            (requestState.successResponse as SuccessStatus | undefined) ?? successResponse;
+        requestState.statusCode = resolvedSuccessResponse.code;
+        if (setResponseStatus) res.statusCode = resolvedSuccessResponse.code;
+        requestState.presenterModel = prepareSuccessResponse(resolvedSuccessResponse, null, responseModel);
+        next();
     };
-};

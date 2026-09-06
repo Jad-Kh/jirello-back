@@ -1,9 +1,11 @@
 export type UpdateCommunityPermissionsRequest = {
     id: string;
-    tasks?: any;
-    taskGroups?: any;
-    meetings?: any;
-    projects?: any;
-    screens?: any;
-    roles?: any;
+    tasks: number[];
+    taskGroups: number[];
+    meetings: number[];
+    projects: number[];
+    screens: number[];
+    roles: number[];
+    users: number[];
+    communities: number[];
 };

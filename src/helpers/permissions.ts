@@ -1,15 +1,16 @@
-import {PermissionsResponse} from "../models/permissions/PermissionsResponse.js";
+import { ICommunityPermissions } from "../database/models/community/ICommunityPermissions.js";
+import { IRole } from "../database/models/role/IRole.js";
 
-const permissionTypes = {
+export const permissionTypes = {
     TASKS: "tasks",
     TASK_GROUPS: "taskGroups",
     MEETINGS: "meetings",
     PROJECTS: "projects",
     SCREENS: "screens",
-    ROLES: "roles"
-}
+    ROLES: "roles",
+} as const;
 
-const Permissions = {
+export const Permissions = {
     READ_OWN: 1,
     CREATE_OWN: 2,
     EDIT_OWN: 3,
@@ -19,59 +20,54 @@ const Permissions = {
     CREATE_OTHER: 7,
     EDIT_OTHER: 8,
     DELETE_OTHER: 9,
-    CHANGE_OTHER: 10
+    CHANGE_OTHER: 10,
+} as const;
+
+export type Permission = (typeof Permissions)[keyof typeof Permissions];
+export type PermissionDomain = keyof Omit<ICommunityPermissions, "id" | "createdAt" | "updatedAt">;
+export type PermissionSet = Record<PermissionDomain, Set<number>>;
+
+const permissionDomains: PermissionDomain[] = [
+    "tasks",
+    "taskGroups",
+    "meetings",
+    "projects",
+    "screens",
+    "roles",
+    "users",
+    "communities",
+];
+
+export const createPermissionsResponse = (
+    permissions: Partial<Record<PermissionDomain, Iterable<number>>>,
+): PermissionSet =>
+    Object.fromEntries(
+        permissionDomains.map((domain) => [domain, new Set(permissions[domain] ?? [])]),
+    ) as PermissionSet;
+
+export const createMaxRolePermissionResponse = (): PermissionSet => {
+    const allPermissions = Object.values(Permissions);
+    return createPermissionsResponse(
+        Object.fromEntries(permissionDomains.map((domain) => [domain, allPermissions])),
+    );
 };
 
-const createMaxRolePermissionResponse = () => {
-    const permissions = {
-        tasks: new Set([10]),
-        taskGroups: new Set([10]),
-        meetings: new Set([10]),
-        projects: new Set([10]),
-        screens: new Set([10]),
-        roles: new Set([10])
-    };
+export const aggregatePermissions = (roles: IRole[]): PermissionSet => {
+    const aggregated = createPermissionsResponse({});
 
-    return createPermissionsResponse(permissions);
-}
+    for (const role of roles) {
+        for (const domain of permissionDomains) {
+            for (const permission of role.permissionOverrides?.[domain] ?? []) {
+                aggregated[domain].add(Number(permission));
+            }
+        }
+    }
 
-const aggregatePermissions = (userRoles) => {
-    const permissions = {
-        tasks: new Set(),
-        taskGroups: new Set(),
-        meetings: new Set(),
-        projects: new Set(),
-        screens: new Set(),
-        roles: new Set()
-    };
-
-    Object.keys(permissions).forEach(key => {
-        permissions[key] = new Set(userRoles.flatMap(role => role.permissionOverrides[key] || []));
-    });
-
-    return createPermissionsResponse(permissions);
+    return aggregated;
 };
 
-const createPermissionsResponse = (permissionSet) => {
-    return new PermissionsResponse({
-        tasks: [...permissionSet.tasks],
-        taskGroups: [...permissionSet.taskGroups],
-        meetings: [...permissionSet.meetings],
-        projects: [...permissionSet.projects],
-        screens: [...permissionSet.screens],
-        roles: [...permissionSet.roles]
-    });
-};
-
-const hasPermission = (userPermissions, permissionType, requiredPermissions) => {
-    return userPermissions?.[permissionType]?.some(p => requiredPermissions.includes(p));
-};
-
-export {
-    permissionTypes,
-    Permissions,
-    createMaxRolePermissionResponse,
-    aggregatePermissions,
-    createPermissionsResponse,
-    hasPermission
-};
+export const hasPermission = (
+    userPermissions: PermissionSet,
+    domain: PermissionDomain,
+    requiredPermissions: readonly number[],
+): boolean => requiredPermissions.some((permission) => userPermissions[domain].has(permission));

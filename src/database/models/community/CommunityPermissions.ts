@@ -1,42 +1,50 @@
 import mongoose from "mongoose";
-import { Permissions } from "../../../helpers/permissions";
+import { Permissions } from "../../../helpers/permissions.js";
 
 const CommunityPermissions = new mongoose.Schema(
     {
         tasks: {
-            type: Array,
+            type: [Number],
             default: [Permissions.READ_OWN],
             required: true,
         },
         taskGroups: {
-            type: Array,
+            type: [Number],
             default: [Permissions.READ_OWN],
             required: true,
         },
         meetings: {
-            type: Array,
+            type: [Number],
             default: [Permissions.READ_OWN],
             required: true,
         },
         projects: {
-            type: Array,
+            type: [Number],
             default: [Permissions.READ_OWN],
             required: true,
         },
         screens: {
-            type: Array,
+            type: [Number],
             default: [Permissions.READ_OWN],
             required: true,
         },
         roles: {
-            type: Array,
+            type: [Number],
             default: [Permissions.READ_OWN],
             required: true,
-        }
+        },
+        users: {
+            type: [Number],
+            default: [Permissions.READ_OWN],
+            required: true,
+        },
+        communities: {
+            type: [Number],
+            default: [Permissions.READ_OWN],
+            required: true,
+        },
     },
-    {
-        timestamps: true,
-    }
-)
+    { _id: false, timestamps: false },
+);
 
-export { CommunityPermissions }
+export { CommunityPermissions };

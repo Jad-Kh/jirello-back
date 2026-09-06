@@ -1,11 +1,11 @@
+import { UserResponse } from "../user/UserResponse.js";
+
 export class AuthResponse {
-    refreshToken: string;
     accessToken: string;
-    id: string;
+    user: UserResponse;
 
     constructor(values: AuthResponse) {
-        this.refreshToken = values.refreshToken;
         this.accessToken = values.accessToken;
-        this.id = values.id;
+        this.user = new UserResponse(values.user);
     }
 }

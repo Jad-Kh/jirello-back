@@ -1,16 +1,16 @@
-import { createValidator } from "../helpers/validator.ts";
-import { CreateProjectRequest } from "../handlers/project/createProjectHandler/createProjectRequest.ts";
-import { APISignature } from "../models/api/APISignature.ts";
-import { ProjectErrorResponses } from "../responses/errors/ProjectErrorResponses.ts";
-import { ProjectValidationSchemes } from "./schemes/projectValidationSchemes.ts";
+import { CreateProjectRequest } from "../handlers/project/createProjectHandler/createProjectRequest.js";
+import { UpdateProjectRequest } from "../handlers/project/updateProjectHandler/updateProjectRequest.js";
+import { createValidator } from "../helpers/validator.js";
+import { ProjectErrorResponses } from "../responses/errors/ProjectErrorResponses.js";
+import { ProjectValidationSchemes } from "./schemes/projectValidationSchemes.js";
 
 export const createProjectValidator = createValidator<CreateProjectRequest>(
     ProjectValidationSchemes.createProjectValidationScheme,
-    ProjectErrorResponses.CREATION_ERROR
+    ProjectErrorResponses.CREATION_ERROR,
 );
 
-export const updateProjectValidator = createValidator<APISignature>(
+export const updateProjectValidator = createValidator<UpdateProjectRequest>(
     ProjectValidationSchemes.updateProjectValidationScheme,
     ProjectErrorResponses.PROJECT_UPDATE_ERROR,
-    true
+    true,
 );

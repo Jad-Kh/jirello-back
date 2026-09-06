@@ -5,4 +5,4 @@ export type SignUpRequest = {
     birthday: string;
     email: string;
     password: string;
-}
+};

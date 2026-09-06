@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: jirello
+resources:
+    - namespace.yaml
+    - service-account.yaml
+    - configmap.yaml
+    - api.yaml
+    - gateway.yaml
+    - nginx-policies.yaml
+    - queue-worker.yaml
+    - scheduler.yaml
+    - outbox-worker.yaml
+    - database-deploy-job.yaml
+    - availability.yaml
+    - network-policy.yaml
+images:
+    - name: jirello-back
+      newName: ghcr.io/your-organization/jirello-back
+      newTag: change-me

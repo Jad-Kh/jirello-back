@@ -1,5 +1,5 @@
-import { RoleRequest } from "./createRoleRequest.js";
 import { RoleResponse } from "../../../models/role/RoleResponse.js";
+import { RoleRequest } from "./createRoleRequest.js";
 
 export const createRoleMapper = (role: RoleRequest, userId: string): RoleResponse => {
     const userIds: string[] = [userId];
@@ -13,9 +13,9 @@ export const createRoleMapper = (role: RoleRequest, userId: string): RoleRespons
         communityId: role.communityId,
         permittedScreenIds,
         overrideAll,
-        parentRoleId: role.parentRoleId,
+        parentRoleId: role.parentRoleId ?? "",
         priorityPosition: role.priorityPosition,
-        projectBased: role.projectBased,
-        projectIds
+        projectBased: role.projectBased ?? false,
+        projectIds,
     };
 };

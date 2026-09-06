@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+    name: jirello-database-deploy
+spec:
+    backoffLimit: 2
+    ttlSecondsAfterFinished: 86400
+    template:
+        metadata:
+            labels:
+                app.kubernetes.io/name: jirello-back
+                app.kubernetes.io/component: database-deploy
+        spec:
+            restartPolicy: Never
+            serviceAccountName: jirello-back
+            securityContext:
+                runAsNonRoot: true
+                seccompProfile: { type: RuntimeDefault }
+            containers:
+                - name: database-deploy
+                  image: jirello-back:latest
+                  command: ["npm", "run", "db:deploy"]
+                  envFrom:
+                      - configMapRef: { name: jirello-config }
+                      - secretRef: { name: jirello-secrets }
+                  env:
+                      - { name: PROCESS_ROLE, value: api }
+                  resources:
+                      requests: { cpu: 100m, memory: 192Mi }
+                      limits: { cpu: "1", memory: 768Mi }
+                  securityContext:
+                      allowPrivilegeEscalation: false
+                      capabilities: { drop: ["ALL"] }
+                      readOnlyRootFilesystem: true

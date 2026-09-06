@@ -1,12 +1,14 @@
-import { APISignature } from "../api/APISignature.ts";
+import { APISignature } from "../api/APISignature.js";
 
 export class PermissionsResponse extends APISignature {
-    tasks: string[];
-    taskGroups: string[];
-    meetings: string[];
-    projects: string[];
-    screens: string[];
-    roles: string[];
+    tasks: number[];
+    taskGroups: number[];
+    meetings: number[];
+    projects: number[];
+    screens: number[];
+    roles: number[];
+    users: number[];
+    communities: number[];
 
     constructor(values: PermissionsResponse) {
         super(values);
@@ -16,5 +18,7 @@ export class PermissionsResponse extends APISignature {
         this.projects = values?.projects;
         this.screens = values?.screens;
         this.roles = values?.roles;
+        this.users = values?.users;
+        this.communities = values?.communities;
     }
 }

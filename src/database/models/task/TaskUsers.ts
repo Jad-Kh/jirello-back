@@ -11,14 +11,12 @@ const TaskUsers = new mongoose.Schema(
             required: true,
         },
         userIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
-        }
+        },
     },
-    {
-        timestamps: true,
-    }
-)
+    { _id: false, timestamps: false },
+);
 
-export { TaskUsers }
+export { TaskUsers };

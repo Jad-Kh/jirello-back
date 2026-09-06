@@ -1,0 +1,40 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+    name: api-ingress
+spec:
+    podSelector:
+        matchLabels:
+            app.kubernetes.io/name: jirello-back
+            app.kubernetes.io/component: api
+    policyTypes: [Ingress]
+    ingress:
+        - from:
+              - podSelector:
+                    matchLabels:
+                        gateway.networking.k8s.io/gateway-name: jirello-gateway
+              - namespaceSelector:
+                    matchLabels:
+                        kubernetes.io/metadata.name: monitoring
+          ports:
+              - { protocol: TCP, port: 8082 }
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+    name: worker-observability-ingress
+spec:
+    podSelector:
+        matchExpressions:
+            - key: app.kubernetes.io/component
+              operator: In
+              values: [queue-worker, scheduler, outbox-worker]
+    policyTypes: [Ingress]
+    ingress:
+        - from:
+              - podSelector: {}
+              - namespaceSelector:
+                    matchLabels:
+                        kubernetes.io/metadata.name: monitoring
+          ports:
+              - { protocol: TCP, port: 8082 }

@@ -4,12 +4,17 @@ const UserAccess = new mongoose.Schema(
     {
         refreshToken: {
             type: String,
-            default: '',
-        }
+            default: "",
+        },
+        passwordResetToken: {
+            type: String,
+            default: "",
+        },
+        passwordResetExpiresAt: {
+            type: Date,
+        },
     },
-    {
-        timestamps: true,
-    }
-)
+    { _id: false, timestamps: false },
+);
 
-export { UserAccess }
+export { UserAccess };

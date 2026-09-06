@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+    name: jirello-config
+data:
+    NODE_ENV: production
+    PORT: "8082"
+    ACCESS_TOKEN_TTL: 10m
+    REFRESH_TOKEN_TTL: 7d
+    JSON_LIMIT: 1mb
+    # NGINX Gateway Fabric is the single trusted proxy in this topology.
+    TRUST_PROXY_HOPS: "1"
+    LOG_LEVEL: info
+    PASSWORD_RESET_TTL_MINUTES: "15"
+    PUSHER_USE_TLS: "true"
+    # Replace these for the deployed frontend.
+    CORS_ORIGIN: https://jirello.example.com
+    PASSWORD_RESET_URL: https://jirello.example.com/reset-password

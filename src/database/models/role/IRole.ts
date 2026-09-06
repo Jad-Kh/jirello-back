@@ -1,5 +1,5 @@
-import { ICommon } from "../ICommon.ts";
-import { ICommunityPermissions } from "../community/ICommunityPermissions.ts";
+import { ICommunityPermissions } from "../community/ICommunityPermissions.js";
+import { ICommon } from "../ICommon.js";
 
 export type IRole = ICommon & {
     title: string;
@@ -12,4 +12,4 @@ export type IRole = ICommon & {
     priorityPosition: number;
     projectBased: boolean;
     projectIds: string[];
-}
+};

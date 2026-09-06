@@ -1,8 +1,7 @@
-import mongoose, {Model} from "mongoose";
+import mongoose, { Model } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
-
-import { TaskGroupUsers } from "./TaskGroupUsers.ts";
-import { ITaskGroup } from "./ITaskGroup.ts";
+import { ITaskGroup } from "./ITaskGroup.js";
+import { TaskGroupUsers } from "./TaskGroupUsers.js";
 
 const TaskGroupModelSchema = new mongoose.Schema(
     {
@@ -25,10 +24,11 @@ const TaskGroupModelSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
-    }
-)
+    },
+);
 
 TaskGroupModelSchema.plugin(mongoosePaginate);
 
 const TaskGroupModel: Model<ITaskGroup> = mongoose.model<ITaskGroup>("TaskGroups", TaskGroupModelSchema);
-export { TaskGroupModel }
+
+export { TaskGroupModel };

@@ -1,11 +1,7 @@
-const prepareErrorLog = (error, functionName) => {
-    const errorMessage = error.message ?? error ?? "Empty Error";
-    const separator = "\n----------------------------------\n";
-    console.log(
-        `${separator}Error In ${functionName}\nError Message: ${errorMessage}${separator}`
-    );
+import { reportError } from "../helpers/errorReporter.js";
+
+const prepareErrorLog = (error: unknown, functionName: string): void => {
+    reportError(error, { operation: functionName });
 };
 
-export {
-    prepareErrorLog,
-};
+export { prepareErrorLog };

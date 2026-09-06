@@ -1,5 +1,5 @@
-import { APISignature } from "../api/APISignature.ts";
-import { PermissionsResponse } from "../permissions/PermissionsResponse.ts";
+import { APISignature } from "../api/APISignature.js";
+import { PermissionsResponse } from "../permissions/PermissionsResponse.js";
 
 export class RoleResponse extends APISignature {
     title: string;

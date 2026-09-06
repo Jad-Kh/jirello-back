@@ -1,9 +1,11 @@
-import { UserModel } from "../models/user/User";
-import { CommunityModel } from "../models/community/Community"
-import { IUser } from "../models/user/IUser.ts";
+import type { QueryFilter } from "mongoose";
+import { CommunityModel } from "../models/community/Community.js";
+import { IUser } from "../models/user/IUser.js";
+import { UserModel } from "../models/user/User.js";
+import { getTransactionSession } from "../transaction.js";
 
 const createUserQuery = async (body: IUser) => {
-    return await new UserModel(body).save();
+    return await new UserModel(body).save({ session: getTransactionSession() });
 };
 
 const getUserByIdQuery = async (id: string) => {
@@ -30,19 +32,22 @@ const getUserByUsernameQuery = async (username: string) => {
 
 const getUsersOfCommunityQuery = async (communityId: string) => {
     const community = await CommunityModel.findById(communityId).select("userIds ownerIds");
+    if (!community) return [];
     const userIds = [...community.userIds, ...community.ownerIds];
     const users = await UserModel.find({
-        _id: { $in: userIds }
+        _id: { $in: userIds },
     }).select("profile");
     return users;
 };
 
 const getUsersOfCommunityPaginatedQuery = async (communityId: string, skip: number, limit: number) => {
     const community = await CommunityModel.findById(communityId).select("userIds ownerIds");
+    if (!community) return [];
     const userIds = [...community.userIds, ...community.ownerIds];
     const users = await UserModel.find({
-        _id: { $in: userIds }
-    }).select("profile")
+        _id: { $in: userIds },
+    })
+        .select("profile")
         .skip(skip)
         .limit(limit);
     return users;
@@ -51,21 +56,24 @@ const getUsersOfCommunityPaginatedQuery = async (communityId: string, skip: numb
 const addCommunityToUserQuery = async (userId: string, communityId: string) => {
     return await UserModel.updateOne(
         { _id: userId },
-        { $addToSet: { communityIds: communityId } }
-    )
+        { $addToSet: { communityIds: communityId } },
+        { session: getTransactionSession() },
+    );
 };
 
 const addCommunityToUserOwnedQuery = async (userId: string, communityId: string) => {
     return await UserModel.updateOne(
         { _id: userId },
-        { $addToSet: { ownedCommunityIds: communityId } }
-    )
+        { $addToSet: { ownedCommunityIds: communityId } },
+        { session: getTransactionSession() },
+    );
 };
 
 const removeCommunityFromUserQuery = async (userId: string, communityId: string) => {
     return await UserModel.updateOne(
         { _id: userId },
-        { $pull: { communityIds: communityId } }
+        { $pull: { communityIds: communityId } },
+        { session: getTransactionSession() },
     );
 };
 
@@ -79,7 +87,8 @@ const getUsersByRoleIdQuery = async (roleId: string) => {
 const getUsersByRoleIdPaginatedQuery = async (roleId: string, skip: number, limit: number) => {
     const users = await UserModel.find({
         "roles.roleIds": roleId,
-    }).select("profile")
+    })
+        .select("profile")
         .skip(skip)
         .limit(limit);
     return users;
@@ -88,14 +97,16 @@ const getUsersByRoleIdPaginatedQuery = async (roleId: string, skip: number, limi
 const assignRoleToUserQuery = async (userId: string, roleId: string) => {
     return await UserModel.updateOne(
         { _id: userId },
-        { $addToSet: { roleIds: roleId } }
-    )
+        { $addToSet: { "roles.roleIds": roleId } },
+        { session: getTransactionSession() },
+    );
 };
 
 const removeRoleFromUserQuery = async (userId: string, roleId: string) => {
     return await UserModel.updateOne(
         { _id: userId },
-        { $pull: { roleIds: roleId } }
+        { $pull: { "roles.roleIds": roleId } },
+        { session: getTransactionSession() },
     );
 };
 
@@ -106,19 +117,53 @@ const getUserAccessByIdQuery = async (id: string) => {
     return userAccess;
 };
 
-const updateUserAccessQuery = async(id: string, token: string) => {
-    return await UserModel.updateOne(
-        { _id: id },
-        { $set: { 'access.refreshToken': token } }
-    );
+const updateUserAccessQuery = async (id: string, token: string) => {
+    return await UserModel.updateOne({ _id: id }, { $set: { "access.refreshToken": token } });
 };
 
-const removeUserAccessQuery = async(id: string) => {
-    return await UserModel.updateOne(
-        { _id: id },
-        { $set: { 'access.refreshToken': null } }
-    );
+const removeUserAccessQuery = async (id: string) => {
+    return await UserModel.updateOne({ _id: id }, { $set: { "access.refreshToken": "" } });
 };
+
+const setPasswordResetTokenQuery = async (id: string, tokenHash: string, expiresAt: Date) =>
+    UserModel.updateOne(
+        { _id: id },
+        {
+            $set: {
+                "access.passwordResetToken": tokenHash,
+                "access.passwordResetExpiresAt": expiresAt,
+            },
+        },
+    );
+
+const resetPasswordQuery = async (tokenHash: string, passwordHash: string, now: Date) =>
+    UserModel.findOneAndUpdate(
+        {
+            "access.passwordResetToken": tokenHash,
+            "access.passwordResetExpiresAt": { $gt: now },
+        },
+        {
+            $set: { "profile.password": passwordHash, "access.refreshToken": "" },
+            $unset: { "access.passwordResetToken": 1, "access.passwordResetExpiresAt": 1 },
+        },
+        { new: true },
+    );
+
+const updateNotificationPreferencesQuery = async (
+    userId: string,
+    preferences: { muteAll?: boolean; mutedCommunityIds?: string[]; mutedChatIds?: string[] },
+) =>
+    UserModel.findByIdAndUpdate(
+        userId,
+        {
+            $set: Object.fromEntries(
+                Object.entries(preferences).map(([key, value]) => [`notifications.${key}`, value]),
+            ),
+        },
+        { new: true, session: getTransactionSession() },
+    );
+
+const countUsersQuery = (filter: QueryFilter<IUser>) => UserModel.countDocuments(filter);
 
 export const UserQueries = {
     createUserQuery,
@@ -136,5 +181,9 @@ export const UserQueries = {
     removeRoleFromUserQuery,
     getUserAccessByIdQuery,
     updateUserAccessQuery,
-    removeUserAccessQuery
-}
+    removeUserAccessQuery,
+    setPasswordResetTokenQuery,
+    resetPasswordQuery,
+    updateNotificationPreferencesQuery,
+    countUsersQuery,
+};

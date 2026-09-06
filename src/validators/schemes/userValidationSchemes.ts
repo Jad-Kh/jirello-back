@@ -1,19 +1,17 @@
-import Joi from "joi"
+import Joi from "joi";
 
-const getUserByIdValidationScheme = Joi.object().keys({
-    id: Joi.string().alphanum().required()
+const objectId = Joi.string().hex().length(24);
+
+const getUserByIdValidationScheme = Joi.object({ id: objectId.required() });
+const getUserByEmailValidationScheme = Joi.object({
+    email: Joi.string().trim().lowercase().email().required(),
 });
-
-const getUserByEmailValidationScheme = Joi.object().keys({
-    email: Joi.string().required()
-});
-
-const getUserByUsernameValidationScheme = Joi.object().keys({
-    email: Joi.string().required()
+const getUserByUsernameValidationScheme = Joi.object({
+    username: Joi.string().trim().min(2).max(30).required(),
 });
 
 export const UserValidationSchemes = {
     getUserByIdValidationScheme,
     getUserByEmailValidationScheme,
-    getUserByUsernameValidationScheme
-}
+    getUserByUsernameValidationScheme,
+};

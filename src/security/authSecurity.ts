@@ -1,42 +1,22 @@
-import { JWTkit } from "../helpers/jwtkit.ts";
-import { parseUsernameOrEmail } from "../helpers/logIn.ts";
-import { IRequest, IResponse } from "../helpers/api.ts";
 import { NextFunction } from "express";
-import { handleError } from "../helpers/errorLogging.ts";
-import { CommonErrorResponses } from "../responses/errors/CommonErrorResponses.ts";
-import { RefreshTokenResponse } from "../models/auth/RefreshTokenResponse.ts";
+import { IRequest, IResponse } from "../helpers/api.js";
+import { parseUsernameOrEmail } from "../helpers/logIn.js";
+import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
+import { AuthErrorResponses } from "../responses/errors/AuthErrorResponses.js";
 
-export const authSecurity = async (req: IRequest<RefreshTokenResponse, "user">, res: IResponse, next: NextFunction) => {
-    try {
-        const user = req.user;
-        const registeredToken = JWTkit.generateJWTWithExpiration(user);
-        res.cookie("token", registeredToken);
-        req.userId = user._id;
-        req.requestModel!.token = registeredToken;
-        return next();
-    } catch (error) {
-        return handleError(
-            res,
-            CommonErrorResponses.SERVER_ERROR,
-            error as string,
-            authSecurity,
-            true
+export const parseUsernameOrEmailSecurity = (
+    req: IRequest<unknown, never>,
+    res: IResponse,
+    next: NextFunction,
+): void => {
+    const usernameOrEmail = req.body?.usernameOrEmail;
+    if (typeof usernameOrEmail !== "string") {
+        res.status(400).json(
+            prepareErrorResponse(AuthErrorResponses.LOGIN_VALIDATION_ERROR, "usernameOrEmail is required."),
         );
+        return;
     }
-};
 
-export const parseUsernameOrEmailSecurity = async (req: IRequest<any, "user">, res: IResponse, next: NextFunction) => {
-    try {
-        const data = parseUsernameOrEmail(req.body)
-        req.body = data;
-        return next();
-    } catch (error) {
-        return handleError(
-            res,
-            CommonErrorResponses.SERVER_ERROR,
-            error as string,
-            parseUsernameOrEmailSecurity,
-            true
-        );
-    }
+    req.body = parseUsernameOrEmail(req.body);
+    next();
 };

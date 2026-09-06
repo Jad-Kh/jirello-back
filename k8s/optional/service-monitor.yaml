@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+    name: jirello
+    namespace: monitoring
+spec:
+    namespaceSelector:
+        matchNames: [jirello]
+    selector:
+        matchLabels:
+            monitoring: jirello
+    endpoints:
+        - port: http
+          path: /metrics
+          interval: 30s
+          scrapeTimeout: 10s
+          authorization:
+              credentials:
+                  name: jirello-metrics-token
+                  key: METRICS_TOKEN

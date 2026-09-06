@@ -1,30 +1,52 @@
-import { catchError } from "../../../helpers/errorLogging";
 import { NextFunction } from "express";
-import { IRequest, IResponse } from "../../../helpers/api.js";
-import { SignUpRequest } from "./signUpRequest.js";
 import { UserQueries } from "../../../database/queries/user.js";
-import { checkSecurity } from "../../../helpers/security.js";
-import { signUpSecurity } from "./signUpSecurity.js";
-import { IUser } from "../../../database/models/user/IUser.js";
-import { UserResponse } from "../../../models/user/UserResponse.js";
-import { signUpMapper } from "./signUpMapper.js";
+import { IRequest, IResponse } from "../../../helpers/api.js";
+import { setRefreshTokenCookie } from "../../../helpers/authCookies.js";
+import { catchError } from "../../../helpers/errorLogging.js";
 import { JWTkit } from "../../../helpers/jwtkit.js";
+import { UserResponse } from "../../../models/user/UserResponse.js";
+import { prepareErrorResponse } from "../../../presenters/common/errorResponsePresenter.js";
+import { AuthErrorResponses } from "../../../responses/errors/AuthErrorResponses.js";
+import { signUpMapper } from "./signUpMapper.js";
+import { SignUpRequest } from "./signUpRequest.js";
 
-export const signUpHandler = async(req: IRequest<SignUpRequest, "user">, res: IResponse, next: NextFunction): Promise<void> => {
+export const signUpHandler = async (
+    req: IRequest<SignUpRequest, "auth">,
+    res: IResponse,
+    next: NextFunction,
+): Promise<void> => {
     try {
-        const requestModel = req.requestModel;
-        const userByEmail = await UserQueries.getUserByEmailQuery(requestModel?.email as string) as IUser;
-        const userByUsername = await UserQueries.getUserByUsernameQuery(requestModel?.username as string) as IUser;
-        if(checkSecurity(signUpSecurity(res, userByEmail, userByUsername))) {
-            const mappedUser = await signUpMapper(requestModel as SignUpRequest);
-            const newUser = new UserResponse(mappedUser);
-            const savedUser = await UserQueries.createUserQuery(newUser as IUser);
-            const refreshToken = JWTkit.generateJWT(savedUser);
-            const accessToken = JWTkit.generateJWTWithExpiration(savedUser);
-            req.user = { savedUser, refreshToken, accessToken };
-            return next();
+        const request = req.requestModel!;
+        const [userByEmail, userByUsername] = await Promise.all([
+            UserQueries.getUserByEmailQuery(request.email),
+            UserQueries.getUserByUsernameQuery(request.username),
+        ]);
+
+        if (userByEmail) {
+            res.status(AuthErrorResponses.EMAIL_EXISTS_ERROR.code).json(
+                prepareErrorResponse(AuthErrorResponses.EMAIL_EXISTS_ERROR, null),
+            );
+            return;
         }
-    } catch(error) {
+        if (userByUsername) {
+            res.status(AuthErrorResponses.USERNAME_EXISTS_ERROR.code).json(
+                prepareErrorResponse(AuthErrorResponses.USERNAME_EXISTS_ERROR, null),
+            );
+            return;
+        }
+
+        const savedUser = await UserQueries.createUserQuery(await signUpMapper(request));
+        const refreshToken = JWTkit.generateRefreshToken(savedUser);
+        const accessToken = JWTkit.generateAccessToken(savedUser);
+        await UserQueries.updateUserAccessQuery(savedUser.id, JWTkit.hashToken(refreshToken));
+        setRefreshTokenCookie(res, refreshToken);
+
+        req.auth = {
+            accessToken,
+            user: new UserResponse(savedUser.toObject({ virtuals: true }) as unknown as UserResponse),
+        };
+        next();
+    } catch (error) {
         catchError(error as Error, res, signUpHandler.name);
     }
-}
+};

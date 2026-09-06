@@ -1,4 +1,4 @@
-import { APISignature } from "../api/APISignature.ts";
+import { APISignature } from "../api/APISignature.js";
 
 export class ProjectResponse extends APISignature {
     name: string;

@@ -1,0 +1,78 @@
+{
+    "name": "jirello-back",
+    "type": "module",
+    "version": "1.0.0",
+    "description": "Jirello REST API",
+    "private": true,
+    "main": "dist/index.js",
+    "scripts": {
+        "clean": "node -e \"require('node:fs').rmSync('dist', { recursive: true, force: true })\"",
+        "build": "npm run clean && tsc -p tsconfig.json",
+        "dev": "tsx watch src/index.ts",
+        "start": "node dist/index.js",
+        "db:indexes": "node dist/scripts/syncIndexes.js",
+        "db:migrate": "node dist/scripts/migrateRealtime.js",
+        "db:deploy": "npm run db:migrate && npm run db:indexes",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:integration": "vitest run test/integration",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "lint": "biome lint .",
+        "format": "prettier --write .",
+        "format:check": "prettier --check .",
+        "check": "npm run lint && npm run format:check && npm run typecheck && npm test && npm run build",
+        "db:seed": "tsx src/scripts/seedDemo.ts",
+        "db:seed:scale": "tsx src/scripts/seedScale.ts"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/Jad-Kh/jirello-back.git"
+    },
+    "author": "Jirello contributors",
+    "license": "ISC",
+    "engines": {
+        "node": ">=22"
+    },
+    "bugs": {
+        "url": "https://github.com/Jad-Kh/jirello-back/issues"
+    },
+    "homepage": "https://github.com/Jad-Kh/jirello-back#readme",
+    "dependencies": {
+        "@prometheus-io/client": "^0.16.0",
+        "@sentry/node": "^10.71.0",
+        "bcrypt": "^6.0.0",
+        "bullmq": "^6.3.0",
+        "cookie-parser": "^1.4.7",
+        "cors": "^2.8.6",
+        "dotenv": "^17.4.2",
+        "express": "^5.2.1",
+        "express-rate-limit": "^8.6.2",
+        "helmet": "^8.3.0",
+        "ioredis": "^6.0.0",
+        "joi": "^18.2.5",
+        "jsonwebtoken": "^9.0.3",
+        "mongoose": "^9.9.3",
+        "mongoose-paginate-v2": "^1.9.5",
+        "nodemailer": "^9.0.5",
+        "pino": "^10.3.1",
+        "pino-http": "^11.0.0",
+        "pusher": "^5.3.4",
+        "redis": "^6.2.1"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^2.5.10",
+        "@types/bcrypt": "^6.0.0",
+        "@types/cookie-parser": "^1.4.10",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.6",
+        "@types/jsonwebtoken": "^9.0.10",
+        "@types/node": "^24.3.0",
+        "@types/nodemailer": "^8.0.1",
+        "@types/supertest": "^7.2.1",
+        "prettier": "^3.9.6",
+        "supertest": "^7.2.2",
+        "tsx": "^4.23.12",
+        "typescript": "^7.0.2",
+        "vitest": "^4.1.11"
+    }
+}

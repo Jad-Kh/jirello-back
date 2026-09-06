@@ -2,30 +2,33 @@ import mongoose, { Model } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
 
 import { CommunityPermissions } from "./CommunityPermissions.js";
-import { ICommunity } from "./ICommunity.ts";
+import { ICommunity } from "./ICommunity.js";
 
 const CommunityModelSchema = new mongoose.Schema(
     {
         name: {
             type: String,
             required: true,
+            trim: true,
         },
         flag: {
             type: String,
             required: true,
+            uppercase: true,
+            trim: true,
         },
         ownerIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
         userIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
         projectIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
@@ -36,14 +39,15 @@ const CommunityModelSchema = new mongoose.Schema(
         },
         permissions: {
             type: CommunityPermissions,
+            default: () => ({}),
         },
         roleIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
         screenIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
@@ -56,14 +60,18 @@ const CommunityModelSchema = new mongoose.Schema(
             type: Number,
             default: 0,
             required: true,
-        }
+        },
     },
     {
         timestamps: true,
-    }
-)
+    },
+);
+
+CommunityModelSchema.index({ name: 1 }, { unique: true });
+CommunityModelSchema.index({ flag: 1 }, { unique: true });
 
 CommunityModelSchema.plugin(mongoosePaginate);
 
-const CommunityModel: Model<ICommunity> = mongoose.model<ICommunity>('Community', CommunityModelSchema);
-export { CommunityModel }
+const CommunityModel: Model<ICommunity> = mongoose.model<ICommunity>("Community", CommunityModelSchema);
+
+export { CommunityModel };

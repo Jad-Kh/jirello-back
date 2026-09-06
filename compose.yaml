@@ -1,0 +1,134 @@
+services:
+    gateway:
+        image: nginx:1.29-alpine
+        ports:
+            - "8082:80"
+        volumes:
+            - ./deploy/nginx.conf:/etc/nginx/nginx.conf:ro
+        depends_on:
+            api:
+                condition: service_healthy
+        restart: unless-stopped
+
+    api:
+        build: .
+        image: jirello-back:local
+        env_file: .env
+        environment: &application-environment
+            NODE_ENV: development
+            PORT: 8082
+            MONGO_CONNECT_URI: mongodb://mongo:27017/jirello?replicaSet=rs0
+            REDIS_URL: redis://redis:6379
+            PROCESS_ROLE: api
+        expose:
+            - "8082"
+        depends_on: &application-dependencies
+            mongo:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        healthcheck: &application-healthcheck
+            test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8082/health/ready"]
+            interval: 10s
+            timeout: 3s
+            retries: 10
+            start_period: 20s
+        restart: unless-stopped
+
+    queue-worker:
+        image: jirello-back:local
+        env_file: .env
+        environment:
+            <<: *application-environment
+            PROCESS_ROLE: queue-worker
+        expose:
+            - "8082"
+        depends_on: *application-dependencies
+        healthcheck: *application-healthcheck
+        restart: unless-stopped
+
+    scheduler:
+        image: jirello-back:local
+        env_file: .env
+        environment:
+            <<: *application-environment
+            PROCESS_ROLE: scheduler
+        expose:
+            - "8082"
+        depends_on: *application-dependencies
+        healthcheck: *application-healthcheck
+        restart: unless-stopped
+
+    outbox-worker:
+        image: jirello-back:local
+        env_file: .env
+        environment:
+            <<: *application-environment
+            PROCESS_ROLE: outbox-worker
+        expose:
+            - "8082"
+        depends_on: *application-dependencies
+        healthcheck: *application-healthcheck
+        restart: unless-stopped
+
+    database-deploy:
+        image: jirello-back:local
+        profiles: ["tools"]
+        env_file: .env
+        environment:
+            <<: *application-environment
+        command: ["npm", "run", "db:deploy"]
+        depends_on: *application-dependencies
+        restart: "no"
+
+    scale-seed:
+        image: jirello-back:local
+        profiles: ["tools"]
+        env_file: .env
+        environment:
+            <<: *application-environment
+            ALLOW_SCALE_SEED: "true"
+            SEED_PROFILE: ${SEED_PROFILE:-small}
+            SEED_RANDOM_STATE: ${SEED_RANDOM_STATE:-20260903}
+            SEED_ANCHOR: ${SEED_ANCHOR:-2026-09-03}
+            SEED_BATCH_SIZE: ${SEED_BATCH_SIZE:-2000}
+        command: ["node", "dist/scripts/seedScale.js"]
+        depends_on: *application-dependencies
+        restart: "no"
+
+    mongo:
+        image: mongo:8
+        command: ["--replSet", "rs0", "--bind_ip_all"]
+        ports:
+            - "27018:27017"
+        volumes:
+            - mongo-data:/data/db
+        healthcheck:
+            test:
+                [
+                    "CMD",
+                    "mongosh",
+                    "--quiet",
+                    "--eval",
+                    "try { rs.status().ok } catch (_) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo:27017'}]}).ok }",
+                ]
+            interval: 5s
+            timeout: 5s
+            retries: 20
+
+    redis:
+        image: redis:8-alpine
+        command: ["redis-server", "--appendonly", "yes"]
+        ports:
+            - "6379:6379"
+        volumes:
+            - redis-data:/data
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 5s
+            timeout: 3s
+            retries: 20
+
+volumes:
+    mongo-data:
+    redis-data:

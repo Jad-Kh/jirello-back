@@ -1,9 +1,9 @@
-import { UserResponse } from "./UserResponse.ts";
+import { UserResponse } from "./UserResponse.js";
 
 export class UsersOfCommunityResponse {
-    users: { user: UserResponse[], role: string }[];
+    users: { user: UserResponse; role: "owner" | "user" }[];
 
-    constructor(values: UsersOfCommunityResponse) {
-        this.users = values.users;
+    constructor(values: UsersOfCommunityResponse | UsersOfCommunityResponse["users"]) {
+        this.users = Array.isArray(values) ? values : values.users;
     }
 }

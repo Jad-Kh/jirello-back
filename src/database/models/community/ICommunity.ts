@@ -1,5 +1,5 @@
-import { ICommon } from "../ICommon.ts";
-import { ICommunityPermissions } from "./ICommunityPermissions.ts";
+import { ICommon } from "../ICommon.js";
+import { ICommunityPermissions } from "./ICommunityPermissions.js";
 
 export type ICommunity = ICommon & {
     name: string;
@@ -13,4 +13,4 @@ export type ICommunity = ICommon & {
     screenIds: string[];
     validationLevel: number;
     requiredValidationLevel: number;
-}
+};

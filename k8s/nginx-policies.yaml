@@ -1,0 +1,26 @@
+apiVersion: gateway.nginx.org/v1alpha1
+kind: ClientSettingsPolicy
+metadata:
+    name: jirello-client-settings
+spec:
+    targetRef:
+        group: gateway.networking.k8s.io
+        kind: HTTPRoute
+        name: jirello-api
+    body:
+        maxSize: 1m
+        timeout: 30s
+---
+apiVersion: gateway.nginx.org/v1alpha1
+kind: ProxySettingsPolicy
+metadata:
+    name: jirello-proxy-settings
+spec:
+    targetRefs:
+        - group: gateway.networking.k8s.io
+          kind: HTTPRoute
+          name: jirello-api
+    timeout:
+        connect: 5s
+        read: 35s
+        send: 30s

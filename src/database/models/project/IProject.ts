@@ -1,10 +1,10 @@
-import { ICommon } from "../ICommon.ts";
+import { ICommon } from "../ICommon.js";
 
 export type IProject = ICommon & {
     name: string;
     organizerIds: string[];
     userIds: string[];
-    communityIds: string[];
+    communityId: string;
     taskIds: string[];
     taskGroupIds: string[];
-}
+};

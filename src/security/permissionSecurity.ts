@@ -1,81 +1,109 @@
-import { IUser } from "../database/models/user/IUser.ts";
-import { ICommunity } from "../database/models/community/ICommunity.ts";
+import { Request, RequestHandler } from "express";
+import { ICommunity } from "../database/models/community/ICommunity.js";
+import { IUser } from "../database/models/user/IUser.js";
+import { CommunityQueries } from "../database/queries/community.js";
+import { RoleQueries } from "../database/queries/role.js";
+import { UserQueries } from "../database/queries/user.js";
+import { IRequest, IResponse } from "../helpers/api.js";
 import {
     aggregatePermissions,
     createMaxRolePermissionResponse,
-    createPermissionsResponse
-} from "../helpers/permissions.ts";
-import { RoleQueries } from "../database/queries/role.ts";
-import { isEmpty } from "lodash";
-import { IRole } from "../database/models/role/IRole.ts";
-import { IRequest, IResponse } from "../helpers/api.ts";
-import { PERMISSIONS_MAP } from "../helpers/permissionsMap.ts";
-import { NextFunction } from "express";
-import { CommonErrorResponses } from "../responses/errors/CommonErrorResponses.ts";
-import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.ts";
-import { CommunityQueries } from "../database/queries/community.ts";
-import { UserQueries } from "../database/queries/user.ts";
-import { prepareErrorLog } from "../errorLog/errorLog.ts";
+    createPermissionsResponse,
+    hasPermission,
+    PermissionDomain,
+    PermissionSet,
+} from "../helpers/permissions.js";
+import { prepareErrorResponse } from "../presenters/common/errorResponsePresenter.js";
+import { CommonErrorResponses } from "../responses/errors/CommonErrorResponses.js";
 
-async function getUserEffectivePermissions(user: IUser, community: ICommunity) {
-    if (user.isAdmin || (user.id && community.ownerIds.includes(user.id))) {
+type CommunityIdResolver = (request: Request) => string | undefined;
+
+const normalizeIds = (ids: string[]): string[] => ids.map(String);
+
+export async function getUserEffectivePermissions(
+    user: IUser,
+    community: ICommunity,
+): Promise<PermissionSet> {
+    const userId = user.id!;
+    if (user.isAdmin || normalizeIds(community.ownerIds).includes(userId)) {
         return createMaxRolePermissionResponse();
     }
+
     if (user.roles?.priorityRoleId) {
-        const priorityRole = await RoleQueries.getRoleByIdQuery(user.roles.priorityRoleId.toString());
-        if (!isEmpty(priorityRole)) {
+        const priorityRole = await RoleQueries.getRoleByIdQuery(user.roles.priorityRoleId);
+        if (priorityRole && priorityRole.communityId === community.id) {
             return createPermissionsResponse(priorityRole.permissionOverrides);
         }
     }
-    const userRolesInCommunity = await RoleQueries.getRolesOfUserInCommunityQuery(community.id as string, user.id as string);
-    if (userRolesInCommunity.length > 0) {
-        const overrideRoles = userRolesInCommunity.filter((r: IRole) => r.overrideAll);
-        const rolesToConsider = overrideRoles.length > 0 ? overrideRoles : userRolesInCommunity;
-        return aggregatePermissions(rolesToConsider);
+
+    const roles = await RoleQueries.getRolesOfUserInCommunityQuery(community.id!, userId);
+    if (roles.length > 0) {
+        const overridingRoles = roles.filter((role) => role.overrideAll);
+        return aggregatePermissions(overridingRoles.length > 0 ? overridingRoles : roles);
     }
+
     return createPermissionsResponse(community.permissions);
 }
 
-function getRequiredPermission(routePattern: string, method: string, req: IRequest<any, "user">) {
-    const permissionEntry = PERMISSIONS_MAP[routePattern]?.[method];
-    if (!permissionEntry) {
-        return null;
-    }
-    return typeof permissionEntry === 'function' ? permissionEntry(req) : permissionEntry;
+function deny(response: IResponse, status: 401 | 403, message: string): void {
+    const error = status === 401 ? CommonErrorResponses.UNAUTHORIZED : CommonErrorResponses.FORBIDDEN;
+    response.status(status).json(prepareErrorResponse(error, message));
 }
 
-export const permissionSecurity = async (req: IRequest<any, "user">, res: IResponse, next: NextFunction) => {
-    try {
-        const activeCommunityId = req.header("activeCommunityId") as string;
-        if (!activeCommunityId) {
-            return res.status(CommonErrorResponses.UNAUTHORIZED.code).json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, "Active community ID required."));
+export function requireCommunityPermission(
+    domain: PermissionDomain,
+    permissions: readonly number[],
+    resolveCommunityId: CommunityIdResolver = (request) => request.header("activeCommunityId") ?? undefined,
+): RequestHandler {
+    return async (request, response, next): Promise<void> => {
+        const req = request as IRequest<unknown, never>;
+        try {
+            if (!req.userId) {
+                deny(response, 401, "Authentication required.");
+                return;
+            }
+
+            const communityId = resolveCommunityId(req);
+            if (!communityId) {
+                deny(response, 403, "Community context required.");
+                return;
+            }
+
+            const [community, user] = await Promise.all([
+                CommunityQueries.getCommunityByIdQuery(communityId),
+                UserQueries.getUserByIdQuery(req.userId),
+            ]);
+            if (!community || !user) {
+                deny(response, 403, "Community access denied.");
+                return;
+            }
+
+            const memberIds = [...normalizeIds(community.ownerIds), ...normalizeIds(community.userIds)];
+            if (!user.isAdmin && !memberIds.includes(user.id)) {
+                deny(response, 403, "Community membership required.");
+                return;
+            }
+
+            const effectivePermissions = await getUserEffectivePermissions(user, community);
+            if (permissions.length > 0 && !hasPermission(effectivePermissions, domain, permissions)) {
+                deny(response, 403, "Insufficient permissions.");
+                return;
+            }
+
+            req.user = user;
+            req.community = community;
+            next();
+        } catch (error) {
+            next(error);
         }
-        const community = await CommunityQueries.getCommunityByIdQuery(activeCommunityId);
-        if (isEmpty(community)) {
-            return res.status(CommonErrorResponses.UNAUTHORIZED.code).json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, "Invalid community."));
-        }
-        const user = req.user ? req.user : await UserQueries.getUserByIdQuery(req.userId as string);
-        if (isEmpty(user)) {
-            return res.status(CommonErrorResponses.UNAUTHORIZED.code).json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));
-        }
-        req.user = user;
-        const userPermissions = await getUserEffectivePermissions(user, community);
-        const requiredPermission = getRequiredPermission(req.route.path, req.method, req);
-        if (!requiredPermission?.domain || !requiredPermission.permissions) {
-            return res.status(CommonErrorResponses.UNAUTHORIZED.code).json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, null));
-        }
-        if (requiredPermission.permissions.length === 0) {
-            return next();
-        }
-        const { domain, permissions } = requiredPermission;
-        const hasPermission = permissions.some((perm: any) => userPermissions[domain]?.has(perm));
-        if (!hasPermission) {
-            return res.status(CommonErrorResponses.UNAUTHORIZED.code).json(prepareErrorResponse(CommonErrorResponses.UNAUTHORIZED, "Insufficient permissions."));
-        }
-        return next();
-    } catch (error) {
-        prepareErrorLog(error, "permissionSecurity");
-        return res.status(CommonErrorResponses.SERVER_ERROR.code)
-            .json(prepareErrorResponse(CommonErrorResponses.SERVER_ERROR, null));
+    };
+}
+
+export const requireSelf: RequestHandler = (request, response, next): void => {
+    const req = request as IRequest<unknown, never>;
+    if (req.userId !== req.params.id) {
+        deny(response, 403, "You can only access your own resource.");
+        return;
     }
+    next();
 };

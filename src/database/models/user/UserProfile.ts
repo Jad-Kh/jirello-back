@@ -5,20 +5,23 @@ const UserProfile = new mongoose.Schema(
         username: {
             type: String,
             required: true,
-            min: 2,
-            max: 30,
+            trim: true,
+            minlength: 2,
+            maxlength: 30,
         },
         firstName: {
             type: String,
             required: true,
-            min: 2,
-            max: 25,
+            minlength: 2,
+            maxlength: 25,
+            trim: true,
         },
         lastName: {
             type: String,
             required: true,
-            min: 2,
-            max: 25,
+            minlength: 2,
+            maxlength: 25,
+            trim: true,
         },
         birthday: {
             type: String,
@@ -27,16 +30,16 @@ const UserProfile = new mongoose.Schema(
         email: {
             type: String,
             required: true,
+            lowercase: true,
+            trim: true,
         },
         password: {
             type: String,
             required: true,
-            min: 8,
-        }
+            minlength: 8,
+        },
     },
-    {
-        timestamps: true,
-    }
-)
+    { _id: false, timestamps: false },
+);
 
-export { UserProfile }
+export { UserProfile };

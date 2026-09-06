@@ -1,20 +1,21 @@
 import mongoose, { Model } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
-import {IProject} from "./IProject.ts";
+import { IProject } from "./IProject.js";
 
 const ProjectModelSchema = new mongoose.Schema(
     {
         name: {
             type: String,
             required: true,
+            trim: true,
         },
         organizerIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
         userIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
@@ -23,22 +24,25 @@ const ProjectModelSchema = new mongoose.Schema(
             required: true,
         },
         taskIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
         taskGroupIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
         },
     },
     {
         timestamps: true,
-    }
+    },
 );
+
+ProjectModelSchema.index({ communityId: 1, name: 1 }, { unique: true });
 
 ProjectModelSchema.plugin(mongoosePaginate);
 
 const ProjectModel: Model<IProject> = mongoose.model<IProject>("Projects", ProjectModelSchema);
-export { ProjectModel }
+
+export { ProjectModel };

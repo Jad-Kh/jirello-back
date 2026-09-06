@@ -1,14 +1,14 @@
 import mongoose, { Model } from "mongoose";
 import mongoosePaginate from "mongoose-paginate-v2";
-import { IScreen } from "./IScreen.ts";
+import { IScreen } from "./IScreen.js";
 
 const ScreenModelSchema = new mongoose.Schema(
     {
         title: {
             type: String,
             required: true,
-            min: 2,
-            max: 30,
+            minlength: 2,
+            maxlength: 30,
         },
         url: {
             type: String,
@@ -17,7 +17,6 @@ const ScreenModelSchema = new mongoose.Schema(
         communityId: {
             type: String,
             required: true,
-            default: 0,
         },
         password: {
             type: String,
@@ -27,17 +26,18 @@ const ScreenModelSchema = new mongoose.Schema(
             default: false,
         },
         allowedUserIds: {
-            type: Array,
+            type: [String],
             default: [],
             required: true,
-        }
+        },
     },
     {
         timestamps: true,
-    }
-)
+    },
+);
 
 ScreenModelSchema.plugin(mongoosePaginate);
 
 const ScreenModel: Model<IScreen> = mongoose.model<IScreen>("Screen", ScreenModelSchema);
-export { ScreenModel }
+
+export { ScreenModel };

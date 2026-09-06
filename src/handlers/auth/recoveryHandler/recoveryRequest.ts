@@ -1,3 +1,8 @@
 export type RecoveryRequest = {
-  email: string;
+    email: string;
+};
+
+export type ResetPasswordRequest = {
+    token: string;
+    password: string;
 };

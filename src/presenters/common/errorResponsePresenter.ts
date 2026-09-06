@@ -1,6 +1,6 @@
+import { ErrorLogType } from "../../helpers/errorLogging.js";
+import { ErrorResponse } from "../../models/api/ErrorResponse.js";
 import { cleanUpModel } from "../../responses/responseHelper.js";
-import { ErrorLogType } from "../../helpers/errorLogging.ts";
-import { ErrorResponse } from "../../models/api/ErrorResponse.ts";
 
 const prepareErrorResponse = (errorStatus: ErrorLogType, message: string | null) => {
     const model = new ErrorResponse({
@@ -10,6 +10,4 @@ const prepareErrorResponse = (errorStatus: ErrorLogType, message: string | null)
     return cleanUpModel(model);
 };
 
-export {
-    prepareErrorResponse,
-};
+export { prepareErrorResponse };

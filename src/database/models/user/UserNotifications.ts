@@ -3,22 +3,20 @@ import mongoose from "mongoose";
 const UserNotifications = new mongoose.Schema(
     {
         mutedCommunityIds: {
-            type: Array,
+            type: [String],
             default: [],
         },
         mutedChatIds: {
-            type: Array,
+            type: [String],
             default: [],
         },
         muteAll: {
             type: Boolean,
             default: false,
             required: true,
-        }
+        },
     },
-    {
-        timestamps: true,
-    }
-)
+    { _id: false, timestamps: false },
+);
 
-export { UserNotifications }
+export { UserNotifications };
